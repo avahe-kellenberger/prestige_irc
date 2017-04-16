@@ -34,10 +34,10 @@ class Connection(object):
             self.is_connected = False;
         return self.is_connected;
         
-    def is_connected(self):
-        """Return if the connection is connected."""
-        return self.is_connected
-    
+    def disconnect(self):
+        """Disconnects the connection."""
+        self.socket.close()
+        
     def send_data(self, data):
         """Sends bytes across the connection."""
         self.socket.send_data(data);

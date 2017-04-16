@@ -16,7 +16,7 @@ class IRCConnection(connection.Connection):
         self.nick = nick
         
         if (self.connect()):
-            self.send(bytes("USER "+ self.nick + " " + self.nick + " " + self.nick + " :prestige.irc bot.\n", "utf-8"))
+            self.send("USER "+ self.nick + " " + self.nick + " " + self.nick + " :prestige.irc bot.\n")
             self.add_listener(lambda data: (self.irc_parser(data)))
         else:
             print("Failed to connect to " + self.server + " at port " + self.port + ".")
@@ -34,7 +34,7 @@ class IRCConnection(connection.Connection):
         return re.split("^(?:[:](\S+) )?(\S+)(?: (?!:)(.+?))?(?: [:](.+))?$", str(data))
             
     def join(self, channels):
-            """Joins the specified channels."""
+            """Joins the specified channels.""" 
             for channel in channels:
                 print("Joining " + channel + ".")
                 self.send("JOIN "+ channel + "\n")
@@ -42,10 +42,6 @@ class IRCConnection(connection.Connection):
     def set_nick(self, nick):
         """Attempts to set the user's nick on the irc server."""
         self.send("NICK " + self.nick +"\n")
-    
-# Send pong back to the server if PING is found.
-#if text.find("PING") != -1:
-#self.socket.send(bytes("PONG " + text.split()[1] + "\r\n", "utf-8"))
                 
                 
                 
