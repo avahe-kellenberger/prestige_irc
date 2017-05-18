@@ -1,7 +1,3 @@
-'''
-@author: Prestige
-'''
-
 import re
 
 from prestige.irc import connection
