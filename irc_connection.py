@@ -101,7 +101,7 @@ class IRCConnection(connection.Connection):
         nick: str
             The user's nick name.
         """
-        # TODO: Review implementation
+        # TODO: Review implementation.
         self.send("NICK :" + nick)
 
     def pong(self, message):
