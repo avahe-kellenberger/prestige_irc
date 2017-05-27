@@ -110,9 +110,9 @@ class IRCConnection(connection.Connection):
         Parameters
         ----------
         message: str
-            The message to send to the server.
+            The same string sent from the server in the PING message.
         """
-        # TODO: check if 'message' needs to be the same message in the server's PING message.
+
         self.send("PONG :" + message)
 
     def quit(self, reason=""):
