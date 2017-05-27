@@ -1,14 +1,62 @@
 import connection
-from irc import IRC
+from irc import IRC, IRCMessage
 
 
 class IRCConnection(connection.Connection):
-
     """Creates a connection to an IRC network."""
-    
-    def __init__(self):
+
+    def __init__(self, nick):
+        """
+        Readies the connection to the irc, sets up the initial nick name to use.
+
+        Parameters
+        ----------
+        nick: str
+            The irc nick name to use.
+        """
         super().__init__()
-        self.nick = None
+        self.__nick = nick
+        self.add_listener(self.__default_server_listener)
+
+    def __default_server_listener(self, irc_message):
+        """Automatically handles required user, nick, and ping responses.
+
+        Parameters
+        ----------
+        irc_message: IRCMessage
+            The message received by the server interpreted into an IRCMessage.
+        """
+        # if "Found your hostname" in message:
+        #     self.irc_conn.send_user("prestige_bot")
+        #     self.irc_conn.join(["#testing"])
+        #     self.irc_conn.remove_listener(self.__listener)
+
+        print(irc_message.raw_message)
+        #
+        # +print("Sender:" + irc_message.sender + " Desc:" + irc_message.description + " Message:" + irc_message.message)
+
+        if "*** Found your hostname" in irc_message.message:
+            # Send user when a connection is first established.
+            print("S E N D I N G   U S E R")
+            self.send("NICK " + self.__nick)
+            self.send_user(self.__nick)
+
+    @property
+    def nick(self):
+        return self.__nick
+
+    @nick.setter
+    def nick(self, nick):
+        """Attempts to set the user's nick on the irc server.
+
+        Parameters
+        ----------
+        nick: str
+            The user's nick name.
+        """
+
+        self.__nick = nick
+        self.send("NICK :" + nick)
 
     def connect(self, ip_address, port, timeout=10):
         """Attempts to connect to the specified IP address and port.
@@ -66,43 +114,32 @@ class IRCConnection(connection.Connection):
         self.send("USER " + self.nick + " " + str(8 if invisible else 0) + " * :" + real_name)
 
     def join(self, channels):
-            """Joins the specified channels.
-
-            Parameters
-            ----------
-            channels: collections.iterable
-                A list of channels, prefixed with '#'
-                This method automatically adds a '#' to the channel name if it is absent.
-            """
-
-            self.send("JOIN :" + ",".join("#" + channel if channel[0] != '#' else channel for channel in channels))
-
-    def part(self, channels, reason=""):
-            """Leaves the specified channels.
-
-            Parameters
-            ----------
-            channels: collections.iterable
-                A list of channels, prefixed with '#'
-                This method automatically adds a '#' to the channel name if it is absent.
-            reason: str (optional)
-                The reason for leaving the channel(s).
-                Default value is an empty string.
-            """
-
-            self.send("PART " +
-                      ",".join("#" + channel if channel[0] != '#' else channel for channel in channels) + " :" + reason)
-
-    def set_nick(self, nick):
-        """Attempts to set the user's nick on the irc server.
+        """Joins the specified channels.
 
         Parameters
         ----------
-        nick: str
-            The user's nick name.
+        channels: collections.iterable
+            A list of channels, prefixed with '#'
+            This method automatically adds a '#' to the channel name if it is absent.
         """
-        # TODO: Review implementation.
-        self.send("NICK :" + nick)
+
+        self.send("JOIN :" + ",".join("#" + channel if channel[0] != '#' else channel for channel in channels))
+
+    def part(self, channels, reason=""):
+        """Leaves the specified channels.
+
+        Parameters
+        ----------
+        channels: collections.iterable
+            A list of channels, prefixed with '#'
+            This method automatically adds a '#' to the channel name if it is absent.
+        reason: str (optional)
+            The reason for leaving the channel(s).
+            Default value is an empty string.
+        """
+
+        self.send("PART " +
+                  ",".join("#" + channel if channel[0] != '#' else channel for channel in channels) + " :" + reason)
 
     def pong(self, message):
         """Sends a pong message to the server.
@@ -126,3 +163,6 @@ class IRCConnection(connection.Connection):
         """
 
         self.send("QUIT :" + reason)
+
+    def _process_data(self, data):
+        return IRCMessage(str(data))

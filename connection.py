@@ -14,7 +14,7 @@ class Connection(object):
         self.__socket = None
         self.__is_connection_alive = False
         self.__listen_thread = None
-        self.__listeners = {}
+        self.__listeners = set()
     
     def connect(self, ip_address, port, timeout):
         """Connect to to server.
@@ -39,7 +39,7 @@ class Connection(object):
             If a connection could not be made.
         """
         
-        if self.__is_connection_alive:
+        if not self.__is_connection_alive:
             try:
                 self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 self.__socket.settimeout(timeout)
@@ -103,19 +103,57 @@ class Connection(object):
         self.send_data(bytes(message + "\r\n", "utf-8"))
     
     def add_listener(self, listener):
-        """Adds a bytes listener to the connection.
+        """Adds a listener to the connection.
 
         Parameters
         ----------
         listener:
-            A function which accepts a string that is notified of messages coming across the network.
+            A function which accepts an object which is created from IRCConnection._process_data(bytes),
+            which is called each time data is received from the server.
         """
-        # TODO: Look into set appending.
-        self.__listeners.append(listener)
-        
+        self.__listeners.add(listener)
+
+    def remove_listener(self, listener):
+        """Removes a listener from the connection.
+
+        Parameters
+        ----------
+        listener:
+            A function which accepts an object which is created from IRCConnection._process_data(bytes),
+            which is called each time data is received from the server.
+        """
+        self.__listeners.remove(listener)
+
+    def _process_data(self, data):
+        """Processed the bytes received by the server.
+
+        Parameters
+        ----------
+        data: bytes
+            The bytes received from the server.
+
+        Returns
+        -------
+        object:
+            An object used by the listeners.
+        """
+
+        return data
+
+    def __dispatch_listeners(self, obj):
+        """Listen to the connection in a loop.
+
+        Parameters
+        ----------
+        obj: object
+            The object to send to the listeners.
+        """
+
+        listeners = set(self.__listeners)
+        while listeners:
+            listeners.pop()(obj)
+
     def __listen(self):
-        """Listen to the connection in a loop."""
+        """Listens to incoming data from the socket."""
         while self.__is_connection_alive:
-            data = self.__socket.recv(4096)
-            for listener in self.__listeners:
-                listener(data)
+            self.__dispatch_listeners(self._process_data(self.__socket.recv(4096)))
