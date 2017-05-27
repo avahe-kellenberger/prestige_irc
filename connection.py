@@ -16,12 +16,27 @@ class Connection(object):
         self.__listen_thread = None
         self.__listeners = {}
     
-    def connect(self, ip_address, port, timeout = 10):
+    def connect(self, ip_address, port, timeout):
         """Connect to to server.
-        
-        Throws a socket error if a connection could not be made. 
-        Returns if the connection state changed.
-        
+
+        Parameters
+        ----------
+        ip_address: str
+            The IP address of the server.
+        port: int
+            The port number to bind to.
+        timeout: int
+            The number of seconds to wait to stop attempting to connect if a connection has not yet been made.
+
+        Returns
+        -------
+        bool:
+            If the connection was successfully established.
+
+        Throws
+        ------
+        socket.error:
+            If a connection could not be made.
         """
         
         if self.__is_connection_alive:
@@ -40,7 +55,14 @@ class Connection(object):
         return False
         
     def disconnect(self):
-        """Disconnects; returns True if the connection state changed."""
+        """Disconnects from the server.
+
+        Returns
+        -------
+        bool:
+           If the connection was successfully terminated.
+        """
+
         if self.__is_connection_alive:
             self.__socket.close()
             self.__is_connection_alive = False
@@ -49,19 +71,45 @@ class Connection(object):
         
     @property
     def is_connection_alive(self):
-        """Return if the connection is currently connected."""
+        """
+        Returns
+        -------
+        bool:
+            If the connection is currently connected.
+        """
+
         return self.__is_connection_alive
     
     def send_data(self, data):
-        """Sends bytes across the connection."""
-        self.__socket.send_data(data)
-    
-    def send(self, string):
-        """Helper function, sends a string across the connection as bytes."""
-        self.send_data(bytes(string, "utf-8"))
+        """Sends bytes across the connection.
+
+        Parameters
+        ----------
+        data: bytes
+            The bytes to send.
+        """
+        # TODO: socket.send?
+        self.__socket.send(data)
+
+    def send(self, message):
+        """Helper function; sends a string across the connection as bytes.
+
+        Parameters
+        ----------
+        message: str
+            The message to send across the connection.
+        """
+
+        self.send_data(bytes(message + "\r\n", "utf-8"))
     
     def add_listener(self, listener):
-        """Adds a bytes listener to the connection."""
+        """Adds a bytes listener to the connection.
+
+        Parameters
+        ----------
+        listener:
+            A function which accepts a string that is notified of messages coming across the network.
+        """
         # TODO: Look into set appending.
         self.__listeners.append(listener)
         
