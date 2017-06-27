@@ -88,7 +88,6 @@ class Connection(object):
         data: bytes
             The bytes to send.
         """
-        # TODO: socket.send?
         self.__socket.send(data)
 
     def send(self, message):
@@ -153,7 +152,17 @@ class Connection(object):
         while listeners:
             listeners.pop()(obj)
 
-    def __listen(self):
-        """Listens to incoming data from the socket."""
+    def __listen(self, buffer_size=4096):
+        """Listens to incoming data from the socket.
+
+        Parameters
+        ----------
+        buffer_size: int
+            The number of bytes for the socket to receive.
+            Default value is 4096.
+        """
+
         while self.__is_connection_alive:
-            self.__dispatch_listeners(self._process_data(self.__socket.recv(4096)))
+            # Separate messages by CR-LF
+            for msg in self.__socket.recv(buffer_size).split(b"\r\n")[:-1]:
+                self.__dispatch_listeners(self._process_data(msg))

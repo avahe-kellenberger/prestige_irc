@@ -1,5 +1,5 @@
 import connection
-from irc import IRC, IRCMessage
+from irc import IRCMessage
 
 
 class IRCConnection(connection.Connection):
@@ -17,6 +17,7 @@ class IRCConnection(connection.Connection):
         super().__init__()
         self.__nick = nick
         self.add_listener(self.__default_server_listener)
+        self.__count = 0
 
     def __default_server_listener(self, irc_message):
         """Automatically handles required user, nick, and ping responses.
@@ -26,20 +27,23 @@ class IRCConnection(connection.Connection):
         irc_message: IRCMessage
             The message received by the server interpreted into an IRCMessage.
         """
-        # if "Found your hostname" in message:
-        #     self.irc_conn.send_user("prestige_bot")
-        #     self.irc_conn.join(["#testing"])
-        #     self.irc_conn.remove_listener(self.__listener)
 
-        print(irc_message.raw_message)
-        #
-        # +print("Sender:" + irc_message.sender + " Desc:" + irc_message.description + " Message:" + irc_message.message)
+        print(irc_message)
+        print("\r\n")
 
-        if "*** Found your hostname" in irc_message.message:
-            # Send user when a connection is first established.
-            print("S E N D I N G   U S E R")
-            self.send("NICK " + self.__nick)
-            self.send_user(self.__nick)
+        if irc_message.command == "PING":
+            self.pong(irc_message.args[0])
+            return
+
+        for string in irc_message.args:
+            if "*** Found your hostname" in string:
+                self.nick = self.__nick
+                self.send_user(self.nick)
+                return
+
+            if "*** Your host is masked" in string:
+                self.join(["#testing"])
+                return
 
     @property
     def nick(self):
@@ -56,7 +60,7 @@ class IRCConnection(connection.Connection):
         """
 
         self.__nick = nick
-        self.send("NICK :" + nick)
+        self.send("NICK " + nick)
 
     def connect(self, ip_address, port, timeout=10):
         """Attempts to connect to the specified IP address and port.
@@ -78,9 +82,7 @@ class IRCConnection(connection.Connection):
         """
 
         success = super().connect(ip_address, port, timeout)
-        if success:
-            self.add_listener(lambda data: (IRC.parse(data)))
-        else:
+        if not success:
             print("Failed to connect to " + ip_address + " at port " + str(port) + ".")
         return success
 
@@ -147,7 +149,7 @@ class IRCConnection(connection.Connection):
         Parameters
         ----------
         message: str
-            The same string sent from the server in the PING message.
+            The argument after "PING" sent from the server.
         """
 
         self.send("PONG :" + message)
@@ -165,4 +167,4 @@ class IRCConnection(connection.Connection):
         self.send("QUIT :" + reason)
 
     def _process_data(self, data):
-        return IRCMessage(str(data))
+        return IRCMessage(data.decode("utf-8"))

@@ -1,22 +1,41 @@
-import re
-
-
 class IRC:
 
     """Static IRC utility class."""
 
     @staticmethod
     def parse(raw_message):
-        # TODO: Learn all parsed sections, update docs.
-        """Parses IRC messages and stores them in an array.
+        """Breaks a message from an IRC server into its prefix, command, and arguments.
 
-        result[2] is the sender.
-        result[3] is the message description.
-        result[4] is the message sent from the sender.
+        Parameters
+        ----------
+        raw_message: str
+            The raw message received from the IRC server.
+
+        Returns
+        -------
+        prefix, command, args: tuple
+            prefix:
+                TODO
+            command:
+                TODO
+            args:
+                TODO
 
         """
+        prefix = ''
+        if not raw_message:
+            raise Exception("Cannot parse an empty message.")
+        if raw_message[0] == ':':
+            prefix, raw_message = raw_message[1:].split(' ', 1)
+        if raw_message.find(' :') != -1:
+            raw_message, trailing = raw_message.split(' :', 1)
+            args = raw_message.split()
+            args.append(trailing)
+        else:
+            args = raw_message.split()
 
-        return re.split("^(?:[:](\S+) )?(\S+)(?: (?!:)(.+?))?(?: [:](.+))?$", str(raw_message))
+        command = args.pop(0)
+        return prefix, command, args
 
 
 class IRCMessage:
@@ -35,8 +54,13 @@ class IRCMessage:
         # Parse the raw message.
         parsed = IRC.parse(raw_message)
 
-        # TODO: Find out all parts of an irc message.
-        self.raw_message = raw_message
-        self.sender = parsed[2]
-        self.description = parsed[3]
-        self.message = parsed[4]
+        self.raw = raw_message
+        self.prefix = parsed[0]
+        self.command = parsed[1]
+        self.args = parsed[2]
+
+    def __str__(self):
+        return "Raw: " + self.raw + \
+            "\r\nPrefix: " + str(self.prefix) + \
+            "\r\nCommand: " + str(self.command) + \
+            "\r\nArgs: " + str(self.args)

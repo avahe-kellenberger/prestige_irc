@@ -1,2 +1,7 @@
 /.project
 /.pydevproject
+*.pyc
+*.iml
+*.iml
+*.xml
+*.iml
