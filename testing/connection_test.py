@@ -1,5 +1,4 @@
 from irc_connection import IRCConnection
-from irc import IRC
 
 
 class ConnectionTest:

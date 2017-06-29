@@ -1,37 +1,35 @@
-import re
+def parse(raw_message):
+    """Breaks a message from an IRC server into its prefix, command, and arguments.
 
-class IRC:
+    Parameters
+    ----------
+    raw_message: str
+        The raw message received from the IRC server.
 
-    """Static IRC utility class."""
+    Returns
+    -------
+    prefix: str
+        The prefix of the IRC message.
+    command: str
+        The IRC command.
+    args: list
+        The arguments in the IRC message.
+    """
 
-    @staticmethod
-    def parse(raw_message):
-        """Breaks a message from an IRC server into its prefix, command, and arguments.
+    prefix = ''
+    if not raw_message:
+        raise Exception("Cannot parse an empty message.")
+    if raw_message[0] == ':':
+        prefix, raw_message = raw_message[1:].split(' ', 1)
+    if raw_message.find(' :') != -1:
+        raw_message, trailing = raw_message.split(' :', 1)
+        args = raw_message.split()
+        args.append(trailing)
+    else:
+        args = raw_message.split()
 
-        Parameters
-        ----------
-        raw_message: str
-            The raw message received from the IRC server.
-
-        Returns
-        -------
-        TODO
-        """
-
-        prefix = ''
-        if not raw_message:
-            raise Exception("Cannot parse an empty message.")
-        if raw_message[0] == ':':
-            prefix, raw_message = raw_message[1:].split(' ', 1)
-        if raw_message.find(' :') != -1:
-            raw_message, trailing = raw_message.split(' :', 1)
-            args = raw_message.split()
-            args.append(trailing)
-        else:
-            args = raw_message.split()
-
-        command = args.pop(0)
-        return prefix, command, args
+    command = args.pop(0)
+    return prefix, command, args
 
 
 class IRCMessage:
@@ -48,7 +46,7 @@ class IRCMessage:
         """
 
         # Parse the raw message.
-        parsed = IRC.parse(raw_message)
+        parsed = parse(raw_message)
 
         self.raw = raw_message
         self.prefix = parsed[0]
