@@ -1,3 +1,5 @@
+import re
+
 class IRC:
 
     """Static IRC utility class."""
@@ -13,15 +15,9 @@ class IRC:
 
         Returns
         -------
-        prefix, command, args: tuple
-            prefix:
-                TODO
-            command:
-                TODO
-            args:
-                TODO
-
+        TODO
         """
+
         prefix = ''
         if not raw_message:
             raise Exception("Cannot parse an empty message.")

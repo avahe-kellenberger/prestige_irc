@@ -90,16 +90,19 @@ class Connection(object):
         """
         self.__socket.send(data)
 
-    def send(self, message):
+    def send(self, message, crlf_ending=True):
         """Helper function; sends a string across the connection as bytes.
 
         Parameters
         ----------
         message: str
             The message to send across the connection.
+        crlf_ending: bool
+            If the method should ensure the message ends with CR-LF.
+            Default value is True.
         """
 
-        self.send_data(bytes(message + "\r\n", "utf-8"))
+        self.send_data(bytes(message + "\r\n" if crlf_ending and not message.endswith("\r\n") else message, "utf-8"))
     
     def add_listener(self, listener):
         """Adds a listener to the connection.
@@ -148,9 +151,8 @@ class Connection(object):
             The object to send to the listeners.
         """
 
-        listeners = set(self.__listeners)
-        while listeners:
-            listeners.pop()(obj)
+        for listener in self.__listeners:
+            listener(obj)
 
     def __listen(self, buffer_size=4096):
         """Listens to incoming data from the socket.
@@ -163,6 +165,7 @@ class Connection(object):
         """
 
         while self.__is_connection_alive:
-            # Separate messages by CR-LF
-            for msg in self.__socket.recv(buffer_size).split(b"\r\n")[:-1]:
+            # Separate messages by CR-LF.
+            # Last element is removed since it will be empty.
+            for msg in self.__socket.recv(buffer_size).split(b"\r\n")[:1]:
                 self.__dispatch_listeners(self._process_data(msg))

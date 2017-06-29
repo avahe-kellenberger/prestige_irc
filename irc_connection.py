@@ -29,7 +29,7 @@ class IRCConnection(connection.Connection):
         """
 
         print(irc_message)
-        print("\r\n")
+        print()
 
         if irc_message.command == "PING":
             self.pong(irc_message.args[0])
