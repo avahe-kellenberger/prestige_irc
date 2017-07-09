@@ -110,9 +110,10 @@ class Connection(object):
         Parameters
         ----------
         listener:
-            A function which accepts an object which is created from IRCConnection._process_data(bytes),
+            A function which accepts an object which is created from Connection._process_data(bytes),
             which is called each time data is received from the server.
         """
+
         self.__listeners.add(listener)
 
     def remove_listener(self, listener):
@@ -121,7 +122,7 @@ class Connection(object):
         Parameters
         ----------
         listener:
-            A function which accepts an object which is created from IRCConnection._process_data(bytes),
+            A function which accepts an object which is created from Connection._process_data(bytes),
             which is called each time data is received from the server.
         """
         self.__listeners.remove(listener)
