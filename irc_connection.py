@@ -1,4 +1,5 @@
 import connection
+from connection import MessageListener
 from irc import IRCMessage
 from commands import Commands
 
@@ -21,32 +22,40 @@ class IRCConnection(connection.Connection):
         """
         super().__init__()
         self.__nick = nick
-        self.add_listener(self.__default_server_listener)
+        self.add_listener(self.__default_server_listener())
 
-    def __default_server_listener(self, irc_message):
-        """Automatically handles required user, nick, and ping responses.
+    def __default_server_listener(self):
+        def receive(irc_message):
+            """
+            Automatically handles required user, nick, and ping responses.
 
-        Parameters
-        ----------
-        irc_message: IRCMessage
-            The message received by the server interpreted into an IRCMessage.
-        """
+            Parameters
+            ----------
+            irc_message: IRCMessage
+                The message received by the server interpreted into an IRCMessage.
+            """
+            print(irc_message)
+            print("\r\n")
 
-        print(irc_message)
+            if irc_message.command == Commands.PRIVMSG.value:
+                if irc_message.args[0] == "PrestigeBot":
+                    if irc_message.args[1].startswith("join"):
+                        self.cmd_join(irc_message.args[1].split(" ")[1:])
 
-        # Send proper response to PING messages.
-        if irc_message.command == "PING":
-            self.cmd_pong(irc_message.args[0])
-            return
+            # Send proper response to PING messages.
+            if irc_message.command == Commands.PING.value:
+                self.cmd_pong(irc_message.args[0])
+                return
 
-        # Once the hostname has been found, user and nick message can be sent.
-        if irc_message.command == "NOTICE":
-            for string in irc_message.args:
-                if "*** Found your hostname" in string:
-                    self.cmd_nick(self.__nick)
-                    self.cmd_user(self.__nick)
-                    # TODO: Add called commands to a list to execute once this code finishes.
-                    return
+            # Once the hostname has been found, user and nick message can be sent.
+            if irc_message.command == Commands.NOTICE.value:
+                for string in irc_message.args:
+                    if "*** Found your hostname" in string:
+                        self.cmd_nick(self.__nick)
+                        self.cmd_user(self.__nick)
+                        # TODO: Add called commands to a list to execute once this code finishes.
+                        return
+        return MessageListener(lambda msg: True, receive)
 
     def _process_data(self, data):
         """Processes the bytes that are received from the server."""
@@ -92,7 +101,7 @@ class IRCConnection(connection.Connection):
             The parameters of the command, in one string.
             Default value is an empty string.
         """
-        self.send(prefix + command + " " + params)
+        self.send(prefix + command + (" " + params) if params else "")
 
     def nick(self):
         """
@@ -405,7 +414,7 @@ class IRCConnection(connection.Connection):
             Optional parameters for the command; see RFC for specification.
             Default value is an empty string.
         """
-        self.send_command(Commands.MODE.value, channel + " " + flags + (" " + params) if params else "")
+        self.send_command(Commands.MODE.value, params=channel + " " + flags + (" " + params) if params else "")
 
     def cmd_mode_nickname(self, nickname, flags, params=""):
         """
@@ -431,7 +440,7 @@ class IRCConnection(connection.Connection):
             Optional parameters for the command; see RFC for specification.
             Default value is an empty string.
         """
-        self.send_command(Commands.MODE.value, nickname + " " + flags + (" " + params) if params else "")
+        self.send_command(Commands.MODE.value, params=nickname + " " + flags + (" " + params) if params else "")
 
     # TODO: Stopped here.
 
@@ -444,7 +453,7 @@ class IRCConnection(connection.Connection):
             The user's nick name.
         """
         self.__nick = nick
-        self.send_command(Commands.NICK.value, nick)
+        self.send_command(Commands.NICK.value, params=nick)
 
     def cmd_message(self, channel_or_user, message):
         """Send a message to a channel or a user.
@@ -456,7 +465,7 @@ class IRCConnection(connection.Connection):
         message: str
             The message to send.
         """
-        self.send_command(Commands.PRIVMSG.value, channel_or_user + " :" + message)
+        self.send_command(Commands.PRIVMSG.value, params=channel_or_user + " :" + message)
 
     def cmd_user(self, real_name, invisible=False):
         """Sends the user data to the server. This is done automatically upon calling IRCConnection.connect, using
@@ -471,7 +480,7 @@ class IRCConnection(connection.Connection):
             channel(s).
             Default value is False.
         """
-        self.send_command(Commands.USER.value, self.__nick + " " + str(8 if invisible else 0) + " * :" + real_name)
+        self.send_command(Commands.USER.value, params=self.__nick + " " + str(8 if invisible else 0) + " * :" + real_name)
 
     def cmd_part(self, channels, reason=""):
         """Leaves the specified channels.
@@ -486,7 +495,7 @@ class IRCConnection(connection.Connection):
             Default value is an empty string.
         """
         self.send_command(Commands.PART.value,
-                          ",".join("#" + channel if channel[0] != '#' else channel for channel in channels) +
+                          params=",".join("#" + channel if channel[0] != '#' else channel for channel in channels) +
                           " :" + reason)
 
     def cmd_pong(self, message):
@@ -508,4 +517,4 @@ class IRCConnection(connection.Connection):
             The reason for terminating the connection.
             Default is an empty string.
         """
-        self.send_command(Commands.QUIT.value, reason)
+        self.send_command(Commands.QUIT.value, params=reason)

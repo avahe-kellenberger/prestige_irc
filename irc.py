@@ -16,13 +16,13 @@ def parse(raw_message):
         The arguments in the IRC message.
     """
 
-    prefix = ''
+    prefix = ""
     if not raw_message:
         raise Exception("Cannot parse an empty message.")
-    if raw_message[0] == ':':
-        prefix, raw_message = raw_message[1:].split(' ', 1)
-    if raw_message.find(' :') != -1:
-        raw_message, trailing = raw_message.split(' :', 1)
+    if raw_message[0] == ":":
+        prefix, raw_message = raw_message[1:].split(" ", 1)
+    if raw_message.find(" :") != -1:
+        raw_message, trailing = raw_message.split(" :", 1)
         args = raw_message.split()
         args.append(trailing)
     else:
@@ -32,7 +32,7 @@ def parse(raw_message):
     return prefix, command, args
 
 
-class IRCMessage:
+class IRCMessage(object):
 
     def __init__(self, raw_message):
         """

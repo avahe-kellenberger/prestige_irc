@@ -4,13 +4,10 @@ import threading
 
 class Connection(object):
 
-    """Creates a connection
-
-    Connects to a server at a specific port, and keeps the connection alive.
-    
-    """
-    
     def __init__(self):
+        """
+        Connects to a server at a specific port, and keeps the connection alive.
+        """
         self.__socket = None
         self.__is_connection_alive = False
         self.__listen_thread = None
@@ -38,7 +35,6 @@ class Connection(object):
         socket.error:
             If a connection could not be made.
         """
-        
         if not self.__is_connection_alive:
             try:
                 self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -62,7 +58,6 @@ class Connection(object):
         bool:
            If the connection was successfully terminated.
         """
-
         if self.__is_connection_alive:
             self.__socket.close()
             self.__is_connection_alive = False
@@ -77,7 +72,6 @@ class Connection(object):
         bool:
             If the connection is currently connected.
         """
-
         return self.__is_connection_alive
     
     def send_data(self, data):
@@ -101,7 +95,6 @@ class Connection(object):
             If the method should ensure the message ends with CR-LF.
             Default value is True.
         """
-
         self.send_data(bytes(message + "\r\n" if crlf_ending and not message.endswith("\r\n") else message, "utf-8"))
     
     def add_listener(self, listener):
@@ -113,7 +106,6 @@ class Connection(object):
             A function which accepts an object which is created from Connection._process_data(bytes),
             which is called each time data is received from the server.
         """
-
         self.__listeners.add(listener)
 
     def remove_listener(self, listener):
@@ -140,7 +132,6 @@ class Connection(object):
         object:
             An object used by the listeners.
         """
-
         return data
 
     def __dispatch_listeners(self, obj):
@@ -151,9 +142,9 @@ class Connection(object):
         obj: object
             The object to send to the listeners.
         """
-
         for listener in self.__listeners:
-            listener(obj)
+            if listener.accept(obj):
+                listener.receive(obj)
 
     def __listen(self, buffer_size=4096):
         """Listens to incoming data from the socket.
@@ -170,3 +161,48 @@ class Connection(object):
             # Last element is removed since it will be empty.
             for msg in self.__socket.recv(buffer_size).split(b"\r\n")[:1]:
                 self.__dispatch_listeners(self._process_data(msg))
+
+
+class MessageListener(object):
+
+    def __init__(self, message_filter, receive):
+        """
+        Listens for messages, and uses a filter to determine if the message should be accepted by the listener.
+        If the message should be accepted, the implementation should then call MessageListener#receive.
+
+        Parameters
+        ----------
+        message_filter: (object) -> bool
+            A method which takes a message as a parameter, and returns if the message should be accepted or not.
+        receive: (object) -> None
+            A method which takes a message as a parameter.
+            This should typically be called after message_filter returns True.
+        """
+        self.__filter = message_filter
+        self.__receive = receive
+
+    def accept(self, message):
+        """
+        Calls the <message_filter> parameter passed into the constructor.
+
+        Parameters
+        ----------
+        message: object
+            The message received.
+
+        Returns
+        -------
+        True if the message should be accepted, otherwise False.
+        """
+        return self.__filter(message)
+
+    def receive(self, message):
+        """
+        Calls the <receive> parameter passed into the constructor.
+
+        Parameters
+        ----------
+        message: object
+            The message being received.
+        """
+        self.__receive(message)
