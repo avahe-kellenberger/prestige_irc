@@ -8,8 +8,7 @@ class IRCConnection(connection.Connection):
 
     """Creates a connection to an IRC network."""
 
-    # TODO: IRCConnection.send_command. Store commands passed to the command queue,
-    # as mentioned in the TODO in __default_server_listener.
+    # TODO: Add wait_for_welcome for each cmd_* function.
 
     def __init__(self, nick):
         """
@@ -21,7 +20,16 @@ class IRCConnection(connection.Connection):
             The irc nick name to use.
         """
         super().__init__()
+        # This queue is used for caching commands while the connection waits to be verified.
+        # The commands will then be executed in the order the were called.
+        self.__command_queue = []
+        # If the server has welcomed the user (used for managing the command queue).
+        self.__welcomed = False
+        # The possible codes the server can send to welcome the user.
+        self.__welcome_codes = ("001", "002", "003", "004")
+        # Set the local user nickname.
         self.__nick = nick
+        # Add the default listener, which handles basic IRC functionality.
         self.add_listener(self.__default_server_listener())
 
     def __default_server_listener(self):
@@ -38,7 +46,7 @@ class IRCConnection(connection.Connection):
             print("\r\n")
 
             if irc_message.command == Commands.PRIVMSG.value:
-                if irc_message.args[0] == "PrestigeBot":
+                if irc_message.args[0] == self.__nick:
                     if irc_message.args[1].startswith("join"):
                         self.cmd_join(irc_message.args[1].split(" ")[1:])
 
@@ -51,10 +59,17 @@ class IRCConnection(connection.Connection):
             if irc_message.command == Commands.NOTICE.value:
                 for string in irc_message.args:
                     if "*** Found your hostname" in string:
-                        self.cmd_nick(self.__nick)
-                        self.cmd_user(self.__nick)
-                        # TODO: Add called commands to a list to execute once this code finishes.
+                        self.cmd_nick(self.__nick, wait_for_welcome=False)
+                        self.cmd_user(self.__nick, wait_for_welcome=False)
                         return
+
+            # Welcome message received.
+            if not self.__welcomed and irc_message.command in self.__welcome_codes:
+                self.__welcomed = True
+                # Fire commands in queue.
+                for command in self.__command_queue:
+                    self.send_command(command[0], command[1], command[2])
+
         return MessageListener(lambda msg: True, receive)
 
     def _process_data(self, data):
@@ -84,7 +99,7 @@ class IRCConnection(connection.Connection):
             print("Failed to connect to " + ip_address + " at port " + str(port) + ".")
         return success
 
-    def send_command(self, command, prefix="", params=""):
+    def send_command(self, command, prefix="", params="", wait_for_welcome=True):
         """Sends commands to the server.
 
         The message sent will be:
@@ -100,8 +115,14 @@ class IRCConnection(connection.Connection):
         params: str (optional)
             The parameters of the command, in one string.
             Default value is an empty string.
+        wait_for_welcome: bool (optional)
+            True if the command should be queued until the welcome message is received, or False to send it regardless.
+            Default value is True.
         """
-        self.send(prefix + command + (" " + params) if params else "")
+        if self.__welcomed or not wait_for_welcome:
+            self.send(prefix + command + (" " + params) if params else "")
+        else:
+            self.__command_queue.append((command, prefix, params))
 
     def nick(self):
         """
@@ -444,16 +465,19 @@ class IRCConnection(connection.Connection):
 
     # TODO: Stopped here.
 
-    def cmd_nick(self, nick):
+    def cmd_nick(self, nick, wait_for_welcome=False):
         """Attempts to set the user's nick on the irc server.
 
         Parameters
         ----------
         nick: str
             The user's nick name.
+        wait_for_welcome: bool (optional)
+            True if the command should be queued until the welcome message is received, or False to send it regardless.
+            Default value is False.
         """
         self.__nick = nick
-        self.send_command(Commands.NICK.value, params=nick)
+        self.send_command(Commands.NICK.value, params=nick, wait_for_welcome=wait_for_welcome)
 
     def cmd_message(self, channel_or_user, message):
         """Send a message to a channel or a user.
@@ -467,7 +491,7 @@ class IRCConnection(connection.Connection):
         """
         self.send_command(Commands.PRIVMSG.value, params=channel_or_user + " :" + message)
 
-    def cmd_user(self, real_name, invisible=False):
+    def cmd_user(self, real_name, invisible=False, wait_for_welcome=False):
         """Sends the user data to the server. This is done automatically upon calling IRCConnection.connect, using
         IRCConnection.nick as the default for real_name.
 
@@ -479,8 +503,13 @@ class IRCConnection(connection.Connection):
             If the user wishes to remain invisible to other members on the network, aside from other members in the same
             channel(s).
             Default value is False.
+        wait_for_welcome: bool (optional)
+            True if the command should be queued until the welcome message is received, or False to send it regardless.
+            Default value is False.
         """
-        self.send_command(Commands.USER.value, params=self.__nick + " " + str(8 if invisible else 0) + " * :" + real_name)
+        self.send_command(Commands.USER.value,
+                          params=self.__nick + " " + str(8 if invisible else 0) + " * :" + real_name,
+                          wait_for_welcome=wait_for_welcome)
 
     def cmd_part(self, channels, reason=""):
         """Leaves the specified channels.
@@ -498,15 +527,18 @@ class IRCConnection(connection.Connection):
                           params=",".join("#" + channel if channel[0] != '#' else channel for channel in channels) +
                           " :" + reason)
 
-    def cmd_pong(self, message):
+    def cmd_pong(self, message, wait_for_welcome=False):
         """Sends a pong message to the server.
 
         Parameters
         ----------
         message: str
             The argument after "PING" sent from the server.
+        wait_for_welcome: bool (optional)
+            True if the command should be queued until the welcome message is received, or False to send it regardless.
+            Default value is False.
         """
-        self.send("PONG :" + message)
+        self.send_command(Commands.PONG.value, params=" :" + message, wait_for_welcome=wait_for_welcome)
 
     def cmd_quit(self, reason=""):
         """Terminates the connection with the server, and sends an optional reason for quitting.
