@@ -15,7 +15,6 @@ def parse(raw_message):
     args: list
         The arguments in the IRC message.
     """
-
     prefix = ""
     if not raw_message:
         raise Exception("Cannot parse an empty message.")
@@ -44,10 +43,8 @@ class IRCMessage(object):
         raw_message: str
             The raw string received from the server.
         """
-
         # Parse the raw message.
         parsed = parse(raw_message)
-
         self.raw = raw_message
         self.prefix = parsed[0]
         self.command = parsed[1]

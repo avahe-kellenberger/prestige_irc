@@ -8,8 +8,6 @@ class IRCConnection(connection.Connection):
 
     """Creates a connection to an IRC network."""
 
-    # TODO: Add wait_for_welcome for each cmd_* function.
-
     def __init__(self, nick):
         """
         Readies the connection to the irc, sets up the initial nick name to use.
