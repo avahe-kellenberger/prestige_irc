@@ -67,15 +67,15 @@ class IRCConnection(connection.Connection):
                 # Fire commands in queue.
                 for command in self.__command_queue:
                     self.send_command(command[0], command[1], command[2])
-
         return MessageListener(lambda msg: True, receive)
 
     def _process_data(self, data):
-        """Processes the bytes that are received from the server."""
+        """Processes the bytes that are received from the server, and converts them into an IRCMessage."""
         return IRCMessage(data.decode("utf-8"))
 
     def connect(self, ip_address, port, timeout=10):
-        """Attempts to connect to the specified IP address and port.
+        """
+        Attempts to connect to the specified IP address and port.
 
         Parameters
         ----------
@@ -92,10 +92,7 @@ class IRCConnection(connection.Connection):
         bool:
             If the connection was successfully established.
         """
-        success = super().connect(ip_address, port, timeout)
-        if not success:
-            print("Failed to connect to " + ip_address + " at port " + str(port) + ".")
-        return success
+        return super().connect(ip_address, port, timeout)
 
     def nick(self):
         """
@@ -113,7 +110,8 @@ class IRCConnection(connection.Connection):
     # --------------------------- #
 
     def send_command(self, command, prefix="", params="", wait_for_welcome=True):
-        """Sends commands to the server.
+        """
+        Sends commands to the server. All functions prefixed with 'cmd' pass through this method.
 
         The message sent will be:
             prefix + command + " " + params
