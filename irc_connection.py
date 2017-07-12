@@ -40,13 +40,6 @@ class IRCConnection(connection.Connection):
             irc_message: IRCMessage
                 The message received by the server interpreted into an IRCMessage.
             """
-            print(irc_message)
-            print("\r\n")
-
-            if irc_message.command == Commands.PRIVMSG.value:
-                if irc_message.args[0] == self.__nick:
-                    if irc_message.args[1].startswith("join"):
-                        self.cmd_join(irc_message.args[1].split(" ")[1:])
 
             # Send proper response to PING messages.
             if irc_message.command == Commands.PING.value:
@@ -94,6 +87,7 @@ class IRCConnection(connection.Connection):
         """
         return super().connect(ip_address, port, timeout)
 
+    @property
     def nick(self):
         """
         Gets the user's nick.
