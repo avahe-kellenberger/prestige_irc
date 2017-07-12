@@ -104,7 +104,7 @@ class IRCConnection(connection.Connection):
         Returns
         -------
         str:
-            the user's nick.
+            The user's nick.
         """
         return self.__nick
 
@@ -131,11 +131,22 @@ class IRCConnection(connection.Connection):
         wait_for_welcome: bool (optional)
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
+
+        Returns
+        -------
+        bool:
+            If the message was sent successfully.
+            If False is returned, this typically means the connection has been terminated.
         """
-        if self.__welcomed or not wait_for_welcome:
-            self.send(prefix + command + (" " + params) if params else "")
+        if self.is_connection_alive():
+            if self.__welcomed or not wait_for_welcome:
+                self.send(prefix + command + (" " + params) if params else "")
+            else:
+                self.__command_queue.append((command, prefix, params))
         else:
-            self.__command_queue.append((command, prefix, params))
+            self.__welcomed = False
+            return False
+        return True
 
     def cmd_admin(self, target="", wait_for_welcome=True):
         """
@@ -575,10 +586,44 @@ class IRCConnection(connection.Connection):
                           params=nickname + " " + flags + (" " + params) if params else "",
                           wait_for_welcome=wait_for_welcome)
 
+    def cmd_motd(self, server="", wait_for_welcome=True):
+        """
+        Returns the message of the day on <server> or the current server if it is omitted.
+
+        Parameters
+        ----------
+        server: str (optional)
+            The server to retrieve the message from, or the current server if omitted.
+        wait_for_welcome: bool (optional)
+            True if the command should be queued until the welcome message is received, or False to send it regardless.
+            Default value is False.
+        """
+        self.send_command(Commands.MOTD.value, params=server, wait_for_welcome=wait_for_welcome)
+
+    def cmd_names(self, channels=None, server=""):
+        """
+        Returns a list of who is on the comma-separated list of <channels>, by channel name.
+        If <channels> is omitted, all users are shown, grouped by channel name with all users who are not on a channel
+        being shown as part of channel "*".
+        If <server> is specified, the command is sent to <server> for evaluation.
+
+        Parameters
+        ----------
+        channels: list (optional)
+            The channels from which to return the list of user nicks.
+            If omitted, all users are returned.
+        server: str (optional)
+            If <server> is specified, the command is sent to <server> for evaluation.
+        """
+        self.send_command(Commands.NAMES.value,
+                          params=",".join(channel for channel in channels) +
+                                 ((" " + server) if server else "") if channels is not None else "")
+
     # TODO: Stopped here.
 
     def cmd_nick(self, nick, wait_for_welcome=False):
-        """Attempts to set the user's nick on the irc server.
+        """
+        Attempts to set the user's nick on the irc server.
 
         Parameters
         ----------
@@ -592,7 +637,8 @@ class IRCConnection(connection.Connection):
         self.send_command(Commands.NICK.value, params=nick, wait_for_welcome=wait_for_welcome)
 
     def cmd_privmsg(self, channel_or_user, message, wait_for_welcome=True):
-        """Send a message to a channel or a user.
+        """
+        Send a message to a channel or a user.
 
         Parameters
         ----------
@@ -609,8 +655,9 @@ class IRCConnection(connection.Connection):
                           wait_for_welcome=wait_for_welcome)
 
     def cmd_user(self, real_name, invisible=False, wait_for_welcome=False):
-        """Sends the user data to the server. This is done automatically upon calling IRCConnection.connect, using
-        IRCConnection.nick as the default for real_name.
+        """
+        Sends the user data to the server. This is done automatically upon calling IRCConnection#connect,
+        using IRCConnection#nick as the default for real_name.
 
         Parameters
         ----------
@@ -629,7 +676,8 @@ class IRCConnection(connection.Connection):
                           wait_for_welcome=wait_for_welcome)
 
     def cmd_part(self, channels, reason="", wait_for_welcome=True):
-        """Leaves the specified channels.
+        """
+        Leaves the specified channels.
 
         Parameters
         ----------
@@ -649,7 +697,8 @@ class IRCConnection(connection.Connection):
                           wait_for_welcome=wait_for_welcome)
 
     def cmd_pong(self, message, wait_for_welcome=False):
-        """Sends a pong message to the server.
+        """
+        Sends a pong message to the server.
 
         Parameters
         ----------
@@ -662,7 +711,8 @@ class IRCConnection(connection.Connection):
         self.send_command(Commands.PONG.value, params=" :" + message, wait_for_welcome=wait_for_welcome)
 
     def cmd_quit(self, reason="", wait_for_welcome=True):
-        """Terminates the connection with the server, and sends an optional reason for quitting.
+        """
+        Terminates the connection with the server, and sends an optional reason for quitting.
 
         Parameters
         ----------
@@ -674,3 +724,4 @@ class IRCConnection(connection.Connection):
             Default value is True.
         """
         self.send_command(Commands.QUIT.value, params=reason, wait_for_welcome=wait_for_welcome)
+        self.__welcomed = False

@@ -157,10 +157,14 @@ class Connection(object):
         """
 
         while self.__is_connection_alive:
-            # Separate messages by CR-LF.
-            # Last element is removed since it will be empty.
-            for msg in self.__socket.recv(buffer_size).split(b"\r\n")[:1]:
-                self.__dispatch_listeners(self._process_data(msg))
+            data = self.__socket.recv(buffer_size)
+            if data:
+                # Messages are separated by CR-LL. Last element is removed since it will be empty.
+                for msg in data.split(b"\r\n")[:1]:
+                    self.__dispatch_listeners(self._process_data(msg))
+            else:
+                # Connection terminated by server: data was empty.
+                self.__is_connection_alive = False
 
 
 class MessageListener(object):
