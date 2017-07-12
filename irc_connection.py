@@ -136,7 +136,7 @@ class IRCConnection(connection.Connection):
             If the message was sent successfully.
             If False is returned, this typically means the connection has been terminated.
         """
-        if self.is_connection_alive():
+        if self.is_connection_alive:
             if self.__welcomed or not wait_for_welcome:
                 self.send(prefix + command + (" " + params) if params else "")
             else:
