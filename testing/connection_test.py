@@ -22,4 +22,3 @@ class ConnectionTest:
         # TODO: IRCConnection.connect blocks thread; maybe run on new thread?
         # Idea: Add an optional param to create the connection on a new thread, and return the thread or None.
         self.irc_conn.connect(ip, port, 1000)
-

@@ -49,7 +49,7 @@ class IRCConnection(connection.Connection):
             # Once the hostname has been found, user and nick message can be sent.
             if irc_message.command == Commands.NOTICE.value:
                 for string in irc_message.args:
-                    if "*** Found your hostname" in string:
+                    if "*** Found your hostname" in string or "*** Couldn't look up your hostname (cached)":
                         self.cmd_nick(self.__nick, wait_for_welcome=False)
                         self.cmd_user(self.__nick, wait_for_welcome=False)
                         return
@@ -132,7 +132,7 @@ class IRCConnection(connection.Connection):
         """
         if self.is_connection_alive:
             if self.__welcomed or not wait_for_welcome:
-                self.send(prefix + command + (" " + params) if params else "")
+                self.send(prefix + command + ((" " + params) if params else ""))
             else:
                 self.__command_queue.append((command, prefix, params))
         else:
@@ -386,7 +386,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.JOIN.value,
+        self.send_command(command=Commands.JOIN.value,
                           params=",".join("#" + channel if channel[0] != '#' else channel for channel in channels),
                           wait_for_welcome=wait_for_welcome)
 
