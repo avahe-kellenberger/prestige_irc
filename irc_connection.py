@@ -24,7 +24,7 @@ class IRCConnection(connection.Connection):
         # If the server has welcomed the user (used for managing the command queue).
         self.__welcomed = False
         # The possible codes the server can send to welcome the user.
-        self.__welcome_codes = ("001", "002", "003", "004")
+        self.__welcome_codes = ("001", "002", "003", "004", "005")
         # Set the local user nickname.
         self.__nick = nick
         # Add the default listener, which handles basic IRC functionality.
@@ -50,7 +50,7 @@ class IRCConnection(connection.Connection):
             if irc_message.command == Commands.NOTICE.value:
                 for string in irc_message.args:
                     if "*** Found your hostname" in string or "*** Couldn't look up your hostname (cached)":
-                        self.cmd_nick(self.__nick, wait_for_welcome=False)
+                        self.cmd_nick(nick=self.__nick, wait_for_welcome=False)
                         self.cmd_user(self.__nick, wait_for_welcome=False)
                         return
 
@@ -155,7 +155,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.ADMIN.value, params=target, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.ADMIN.value, params=target, wait_for_welcome=wait_for_welcome)
 
     def cmd_away(self, message="", wait_for_welcome=True):
         """
@@ -171,7 +171,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.AWAY.value, params=message, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.AWAY.value, params=message, wait_for_welcome=wait_for_welcome)
 
     def cmd_cnotice(self, nickname, channel, message, wait_for_welcome=True):
         """
@@ -200,7 +200,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.CNOTICE.value,
+        self.send_command(command=Commands.CNOTICE.value,
                           params=nickname + " " + channel + " :" + message,
                           wait_for_welcome=wait_for_welcome)
 
@@ -231,7 +231,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.CPRIVMSG.value,
+        self.send_command(command=Commands.CPRIVMSG.value,
                           params=nickname + " " + channel + " :" + message, wait_for_welcome=wait_for_welcome)
 
     def cmd_connect(self, target_server, port, remote_server=None, wait_for_welcome=True):
@@ -253,7 +253,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.CONNECT.value,
+        self.send_command(command=Commands.CONNECT.value,
                           params=target_server + " " + str(port) + (" " + remote_server) if remote_server else "",
                           wait_for_welcome=wait_for_welcome)
 
@@ -268,7 +268,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.DIE.value, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.DIE.value, wait_for_welcome=wait_for_welcome)
 
     def cmd_encap(self, destination, subcommand, parameters, wait_for_welcome=True):
         """
@@ -290,7 +290,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.ENCAP.value,
+        self.send_command(command=Commands.ENCAP.value,
                           params=destination + " " + subcommand + " " + parameters, wait_for_welcome=wait_for_welcome)
 
     def cmd_error(self, error_message, wait_for_welcome=True):
@@ -306,7 +306,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.ERROR.value, params=error_message, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.ERROR.value, params=error_message, wait_for_welcome=wait_for_welcome)
 
     def cmd_help(self, wait_for_welcome=True):
         """
@@ -319,7 +319,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.HELP.value, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.HELP.value, wait_for_welcome=wait_for_welcome)
 
     def cmd_info(self, target="", wait_for_welcome=True):
         """
@@ -336,7 +336,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.INFO.value, params=target, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.INFO.value, params=target, wait_for_welcome=wait_for_welcome)
 
     def cmd_invite(self, nickname, channel, wait_for_welcome=True):
         """
@@ -354,7 +354,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.INVITE.value, params=nickname + " " + channel, wait_for_welcome=wait_for_welcome)
+        self.send_command(command=Commands.INVITE.value, params=nickname + " " + channel, wait_for_welcome=wait_for_welcome)
 
     def cmd_ison(self, nicknames, wait_for_welcome=True):
         """
@@ -370,7 +370,7 @@ class IRCConnection(connection.Connection):
             True if the command should be queued until the welcome message is received, or False to send it regardless.
             Default value is True.
         """
-        self.send_command(Commands.ISON.value,
+        self.send_command(command=Commands.ISON.value,
                           params=" ".join(nick for nick in nicknames), wait_for_welcome=wait_for_welcome)
 
     def cmd_join(self, channels, wait_for_welcome=True):
