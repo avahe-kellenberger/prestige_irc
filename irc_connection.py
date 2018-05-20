@@ -23,30 +23,15 @@ class IRCConnection(connection.Connection):
         self.__command_queue = []
         # Set the local user nickname.
         self.__nick = nick
-        # Add the default listener, which handles basic IRC functionality.
-        self.add_listener(self.__default_server_listener())
-
-    def __default_server_listener(self):
-        def receive(irc_message):
-            """
-            Automatically handles required user, nick, and ping responses.
-
-            Parameters
-            ----------
-            irc_message: IRCMessage
-                The message received by the server interpreted into an IRCMessage.
-            """
-            # Send proper response to PING messages.
-            if irc_message.command == Commands.PING:
-                self.cmd_pong(irc_message.args[0])
-                return
-        return MessageListener(lambda msg: True, receive)
+        # Listener which automatically handles ping responses.
+        self.add_listener(MessageListener(lambda msg: msg.command == Commands.PING,
+                                          lambda msg: self.cmd_pong(msg.args[0])))
 
     def _process_data(self, data):
         """Processes the bytes that are received from the server, and converts them into an IRCMessage."""
         return IRCMessage(data.decode("utf-8"))
 
-    def connect(self, ip_address, port, timeout=10):
+    def connect(self, ip_address, port, timeout=None):
         """
         Attempts to connect to the specified IP address and port.
 
@@ -56,19 +41,19 @@ class IRCConnection(connection.Connection):
             The IP address to connect to.
         port: int
             The port number to bind to.
-        timeout: int (optional)
+        timeout: int|None (optional)
             The number of seconds to wait to stop attempting to connect if a connection has not yet been made.
-            Default value is 10.
+            Default value is None.
 
         Returns
         -------
         bool:
             If the connection was successfully established.
         """
-        connection_successful = super().connect(ip_address, port, timeout)
+        connection_successful = super().connect(ip_address=ip_address, port=port, timeout=timeout)
         if connection_successful:
             self.cmd_nick(nick=self.__nick)
-            self.cmd_user(self.__nick)
+            self.cmd_user(real_name=self.__nick)
         return connection_successful
 
     @property

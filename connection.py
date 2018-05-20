@@ -13,7 +13,7 @@ class Connection(object):
         self.__listen_thread = None
         self.__listeners = set()
     
-    def connect(self, ip_address, port, timeout):
+    def connect(self, ip_address, port, timeout=None):
         """Connect to to server.
 
         Parameters
@@ -22,8 +22,9 @@ class Connection(object):
             The IP address of the server.
         port: int
             The port number to bind to.
-        timeout: int
+        timeout: int|None
             The number of seconds to wait to stop attempting to connect if a connection has not yet been made.
+            Default value is None.
 
         Returns
         -------

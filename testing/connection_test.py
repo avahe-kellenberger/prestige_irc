@@ -18,4 +18,4 @@ class ConnectionTest:
                         self.irc_conn.cmd_join(msg.args[1].split(" ")[1:])
 
         self.irc_conn.add_listener(MessageListener(lambda msg: True, receive=receive))
-        self.irc_conn.connect(ip, port, 1000)
+        self.irc_conn.connect(ip, port)
