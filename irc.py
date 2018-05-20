@@ -44,11 +44,8 @@ class IRCMessage(object):
             The raw string received from the server.
         """
         # Parse the raw message.
-        parsed = parse(raw_message)
         self.raw = raw_message
-        self.prefix = parsed[0]
-        self.command = parsed[1]
-        self.args = parsed[2]
+        self.prefix, self.command, self.args = parse(raw_message)
 
     def __str__(self):
         return "Raw: " + self.raw + \

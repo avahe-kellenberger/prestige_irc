@@ -41,7 +41,7 @@ class Connection(object):
                 self.__socket.settimeout(timeout)
                 self.__socket.connect((ip_address, port))
                 self.__is_connection_alive = True
-                self.__listen_thread = threading.Thread(self.__listen())
+                self.__listen_thread = threading.Thread(target=self.__listen)
                 self.__listen_thread.start()
             except socket.error as exc:
                 print("Caught exception socket.error : " + str(exc))
@@ -159,7 +159,7 @@ class Connection(object):
         while self.__is_connection_alive:
             data = self.__socket.recv(buffer_size)
             if data:
-                # Messages are separated by CR-LL. Last element is removed since it will be empty.
+                # Messages are separated by CR-LF. Last element is removed since it will be empty.
                 for msg in data.split(b"\r\n")[:1]:
                     self.__dispatch_listeners(self._process_data(msg))
             else:
