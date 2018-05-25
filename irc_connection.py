@@ -97,7 +97,7 @@ class IRCConnection(connection.Connection):
             If False is returned, this typically means the connection has been terminated.
         """
         if self.is_connection_alive:
-            self.send(prefix + command + ((" " + params) if params else ""))
+            self.send(message=prefix + command + ((" " + params) if params else ""))
             return True
         return False
 
@@ -224,7 +224,7 @@ class IRCConnection(connection.Connection):
         destination: str
             The hub server destination.
         subcommand: str
-            The command to send/
+            The command to send.
         parameters: str
             The parameters of the command being sent.
         """
@@ -324,7 +324,7 @@ class IRCConnection(connection.Connection):
             The message to send to the user about being kicked from the channel.
             Default value is an empty string.
         """
-        self.send_command(Commands.KICK,
+        self.send_command(command=Commands.KICK,
                           params=channel + " " + nickname + (" " + message) if message else "")
 
     def cmd_kill(self, nickname, message):
@@ -338,7 +338,7 @@ class IRCConnection(connection.Connection):
         message: str
             The reason for the kill command, sent to the user.
         """
-        self.send_command(Commands.KILL, params=nickname + " " + message)
+        self.send_command(command=Commands.KILL, params=nickname + " " + message)
 
     def cmd_knock(self, channel, message=""):
         """
@@ -353,7 +353,7 @@ class IRCConnection(connection.Connection):
         message: str (optional)
             The message to send with the request.
         """
-        self.send_command(Commands.KNOCK, params=channel + (" " + message) if message else "")
+        self.send_command(command=Commands.KNOCK, params=channel + (" " + message) if message else "")
 
     def cmd_links(self, remote_server="", server_mask=""):
         """
@@ -368,7 +368,7 @@ class IRCConnection(connection.Connection):
             The mask used to check for server links. Lists all links if omitted.
             Default value is an empty string.
         """
-        self.send_command(Commands.LINKS, params=(remote_server + " ") if remote_server else "" + server_mask)
+        self.send_command(command=Commands.LINKS, params=(remote_server + " ") if remote_server else "" + server_mask)
 
     def cmd_list(self, channels=None, server=""):
         """
@@ -385,7 +385,7 @@ class IRCConnection(connection.Connection):
             The server to send the topic request to.
             Default value is an empty string.
         """
-        self.send_command(Commands.LIST,
+        self.send_command(command=Commands.LIST,
                           params=(",".join(channels) + " ") if channels is not None else "" + server)
 
     def cmd_lusers(self, mask="", target=""):
@@ -406,7 +406,7 @@ class IRCConnection(connection.Connection):
             The target server to send the request to.
             The default value is an empty string.
         """
-        self.send_command(Commands.LUSERS,
+        self.send_command(command=Commands.LUSERS,
                           params=(mask + " ") if mask else "" + target)
 
     def cmd_mode_channel(self, channel, flags, params=""):
@@ -437,7 +437,7 @@ class IRCConnection(connection.Connection):
             Optional parameters for the command; see RFC for specification.
             Default value is an empty string.
         """
-        self.send_command(Commands.MODE,
+        self.send_command(command=Commands.MODE,
                           params=channel + " " + flags + (" " + params) if params else "")
 
     def cmd_mode_nickname(self, nickname, flags, params=""):
@@ -464,7 +464,7 @@ class IRCConnection(connection.Connection):
             Optional parameters for the command; see RFC for specification.
             Default value is an empty string.
         """
-        self.send_command(Commands.MODE,
+        self.send_command(command=Commands.MODE,
                           params=nickname + " " + flags + (" " + params) if params else "")
 
     def cmd_motd(self, server=""):
@@ -476,7 +476,7 @@ class IRCConnection(connection.Connection):
         server: str (optional)
             The server to retrieve the message from, or the current server if omitted.
         """
-        self.send_command(Commands.MOTD, params=server)
+        self.send_command(command=Commands.MOTD, params=server)
 
     def cmd_names(self, channels=None, server=""):
         """
@@ -493,11 +493,9 @@ class IRCConnection(connection.Connection):
         server: str (optional)
             If <server> is specified, the command is sent to <server> for evaluation.
         """
-        self.send_command(Commands.NAMES,
+        self.send_command(command=Commands.NAMES,
                           params=",".join(channel for channel in channels) +
                                  ((" " + server) if server else "") if channels is not None else "")
-
-    # TODO: Stopped here.
 
     def cmd_nick(self, nick):
         """
@@ -509,7 +507,7 @@ class IRCConnection(connection.Connection):
             The user's nick name.
         """
         self.__nick = nick
-        self.send_command(Commands.NICK, params=nick)
+        self.send_command(command=Commands.NICK, params=nick)
 
     def cmd_privmsg(self, channel_or_user, message):
         """
@@ -522,7 +520,7 @@ class IRCConnection(connection.Connection):
         message: str
             The message to send.
         """
-        self.send_command(Commands.PRIVMSG,
+        self.send_command(command=Commands.PRIVMSG,
                           params=channel_or_user + " :" + message)
 
     def cmd_user(self, real_name, invisible=False):
@@ -539,7 +537,7 @@ class IRCConnection(connection.Connection):
             channel(s).
             Default value is False.
         """
-        self.send_command(Commands.USER,
+        self.send_command(command=Commands.USER,
                           params=self.__nick + " " + str(8 if invisible else 0) + " * :" + real_name)
 
     def cmd_part(self, channels, reason=""):
@@ -555,7 +553,7 @@ class IRCConnection(connection.Connection):
             The reason for leaving the channel(s).
             Default value is an empty string.
         """
-        self.send_command(Commands.PART,
+        self.send_command(command=Commands.PART,
                           params=",".join("#" + channel if channel[0] != '#' else channel for channel in channels) +
                           " :" + reason)
 
@@ -568,7 +566,7 @@ class IRCConnection(connection.Connection):
         message: str
             The argument after "PING" sent from the server.
         """
-        self.send_command(Commands.PONG, params=" :" + message)
+        self.send_command(command=Commands.PONG, params=" :" + message)
 
     def cmd_quit(self, reason=""):
         """
@@ -580,4 +578,4 @@ class IRCConnection(connection.Connection):
             The reason for terminating the connection.
             Default is an empty string.
         """
-        self.send_command(Commands.QUIT, params=reason)
+        self.send_command(command=Commands.QUIT, params=reason)
