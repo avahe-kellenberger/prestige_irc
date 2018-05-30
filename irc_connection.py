@@ -10,7 +10,7 @@ class IRCConnection(connection.Connection):
 
     def __init__(self, nick):
         """
-        Readies the connection to the irc, sets up the initial nick name to use.
+        Readies the connection to the irc network, and sets up the initial nick name to use.
 
         Parameters
         ----------
@@ -549,7 +549,7 @@ class IRCConnection(connection.Connection):
         channels: collections.iterable
             A list of channels, prefixed with '#'
             This method automatically adds a '#' to the channel name if it is absent.
-        reason: str (optional)
+        reason: str (optional
             The reason for leaving the channel(s).
             Default value is an empty string.
         """
@@ -559,7 +559,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_pong(self, message):
         """
-        Sends a pong message to the server.
+        Sends a pong message to the server
 
         Parameters
         ----------

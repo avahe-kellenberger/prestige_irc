@@ -1,4 +1,4 @@
-# prestige.irc
+# irc-api
 
 NOTE: Currently under development.
 

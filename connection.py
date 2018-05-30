@@ -6,7 +6,7 @@ class Connection(object):
 
     def __init__(self):
         """
-        Connects to a server at a specific port, and keeps the connection alive.
+        Readies a connection to a server at a specific port, and keeps the connection alive.
         """
         self.__socket = None
         self.__is_connection_alive = False
