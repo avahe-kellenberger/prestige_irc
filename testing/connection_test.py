@@ -5,7 +5,7 @@ from connection import MessageListener
 
 class ConnectionTest:
 
-    def __init__(self, ip, port):
+    def __init__(self, ip_address, enable_ssl=False):
         print("---Starting tests on connection.py---")
         self.irc_conn = IRCConnection("PrestigeBot")
 
@@ -18,4 +18,8 @@ class ConnectionTest:
                         self.irc_conn.cmd_join(msg.args[1].split(" ")[1:])
 
         self.irc_conn.add_listener(MessageListener(lambda msg: True, receive=receive))
-        self.irc_conn.connect(ip, port)
+
+        if enable_ssl:
+            self.irc_conn.connect_ssl(ip_address=ip_address, port=6697)
+        else:
+            self.irc_conn.connect(ip_address=ip_address, port=6667)

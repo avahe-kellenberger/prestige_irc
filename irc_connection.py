@@ -1,4 +1,6 @@
 import connection
+import ssl
+import socket
 from connection import MessageListener
 from irc import IRCMessage
 from commands import Commands
@@ -52,9 +54,64 @@ class IRCConnection(connection.Connection):
         """
         connection_successful = super().connect(ip_address=ip_address, port=port, timeout=timeout)
         if connection_successful:
-            self.cmd_nick(nick=self.__nick)
-            self.cmd_user(real_name=self.__nick)
+            self.__on_connect()
         return connection_successful
+
+    def connect_ssl(self, ip_address, port, timeout=None):
+        """
+        Attempts to connect to the specified IP address and port.
+
+        Parameters
+        ----------
+        ip_address: str
+            The IP address to connect to.
+        port: int
+            The port number to bind to.
+        timeout: int|None (optional)
+            The number of seconds to wait to stop attempting to connect if a connection has not yet been made.
+            Default value is None.
+
+        Returns
+        -------
+        bool:
+            If the connection was successfully established.
+        """
+        sock = socket.socket()
+        sock.settimeout(timeout)
+        ssl_socket = ssl.create_default_context().wrap_socket(sock=sock, server_hostname=ip_address)
+        return self.connect_socket(sock=ssl_socket, ip_address=ip_address, port=port)
+
+    def connect_socket(self, sock, ip_address, port):
+        """Connect to a server.
+
+        Parameters
+        ----------
+        sock: socket
+            The socket to connect with.
+        ip_address: str
+            The IP address of the server.
+        port: int
+            The port number to bind to.
+
+        Returns
+        -------
+        bool:
+            If the connection was successfully established.
+
+        Throws
+        ------
+        socket.error:
+            If a connection could not be made.
+        """
+        connection_successful = super().connect_socket(sock=sock, ip_address=ip_address, port=port)
+        if connection_successful:
+            self.__on_connect()
+        return connection_successful
+
+    def __on_connect(self):
+        """Runs IRC commands needed after the connection has been established."""
+        self.cmd_nick(nick=self.__nick)
+        self.cmd_user(real_name=self.__nick)
 
     @property
     def nick(self):

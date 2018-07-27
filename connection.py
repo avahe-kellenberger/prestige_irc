@@ -14,7 +14,7 @@ class Connection(object):
         self.__listeners = set()
     
     def connect(self, ip_address, port, timeout=None):
-        """Connect to to server.
+        """Connect to a server.
 
         Parameters
         ----------
@@ -36,10 +36,35 @@ class Connection(object):
         socket.error:
             If a connection could not be made.
         """
+        sock = socket.socket()
+        sock.settimeout(timeout)
+        return self.connect_socket(sock=sock, ip_address=ip_address, port=port)
+
+    def connect_socket(self, sock, ip_address, port):
+        """Connect to a server.
+
+        Parameters
+        ----------
+        sock: socket
+            The socket to connect with.
+        ip_address: str
+            The IP address of the server.
+        port: int
+            The port number to bind to.
+
+        Returns
+        -------
+        bool:
+            If the connection was successfully established.
+
+        Throws
+        ------
+        socket.error:
+            If a connection could not be made.
+        """
         if not self.__is_connection_alive:
             try:
-                self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                self.__socket.settimeout(timeout)
+                self.__socket = sock
                 self.__socket.connect((ip_address, port))
                 self.__is_connection_alive = True
                 self.__listen_thread = threading.Thread(target=self.__listen)
@@ -48,9 +73,9 @@ class Connection(object):
                 print("Caught exception socket.error : " + str(exc))
                 self.__is_connection_alive = False
             return self.__is_connection_alive
-    
+
         return False
-        
+
     def disconnect(self):
         """Disconnects from the server.
 
