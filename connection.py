@@ -161,7 +161,7 @@ class Connection(object):
         return data
 
     def __dispatch_listeners(self, obj):
-        """Listen to the connection in a loop.
+        """Dispatches the listeners waiting for the object.
 
         Parameters
         ----------
