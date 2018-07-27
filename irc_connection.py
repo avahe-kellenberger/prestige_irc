@@ -20,9 +20,6 @@ class IRCConnection(connection.Connection):
             The irc nick name to use.
         """
         super().__init__()
-        # This queue is used for caching commands while the connection waits to be verified.
-        # The commands will then be executed in the order the were called.
-        self.__command_queue = []
         # Set the local user nickname.
         self.__nick = nick
         # Listener which automatically handles ping responses.
