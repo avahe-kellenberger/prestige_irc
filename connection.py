@@ -46,7 +46,7 @@ class Connection(object):
         Parameters
         ----------
         sock: socket
-            The socket to connect with.
+            The unconnected socket with which to establish the connection.
         ip_address: str
             The IP address of the server.
         port: int

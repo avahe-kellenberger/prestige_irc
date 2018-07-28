@@ -30,7 +30,34 @@ class IRCConnection(connection.Connection):
         """Processes the bytes that are received from the server, and converts them into an IRCMessage."""
         return IRCMessage(data.decode("utf-8"))
 
-    def connect(self, ip_address, port, timeout=None):
+    def connect(self, ip_address, port, timeout=None, enable_ssl=False):
+        """
+        Attempts to connect to the specified IP address and port.
+
+        Parameters
+        ----------
+        ip_address: str
+            The IP address to connect to.
+        port: int
+            The port number to bind to.
+        timeout: int|None (optional)
+            The number of seconds to wait to stop attempting to connect if a connection has not yet been made.
+            Default value is None.
+        enable_ssl: bool (optional)
+            If the connection should be made with SSL.
+            Default value is False.
+
+        Returns
+        -------
+        bool:
+            If the connection was successfully established.
+        """
+        if enable_ssl:
+            return self.__connect_ssl(ip_address=ip_address, port=port)
+        else:
+            return self.__connect(ip_address=ip_address, port=port)
+
+    def __connect(self, ip_address, port, timeout=None):
         """
         Attempts to connect to the specified IP address and port.
 
@@ -54,7 +81,7 @@ class IRCConnection(connection.Connection):
             self.__on_connect()
         return connection_successful
 
-    def connect_ssl(self, ip_address, port, timeout=None):
+    def __connect_ssl(self, ip_address, port, timeout=None):
         """
         Attempts to connect to the specified IP address and port.
 

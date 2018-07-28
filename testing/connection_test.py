@@ -19,7 +19,5 @@ class ConnectionTest:
 
         self.irc_conn.add_listener(MessageListener(lambda msg: True, receive=receive))
 
-        if enable_ssl:
-            self.irc_conn.connect_ssl(ip_address=ip_address, port=6697)
-        else:
-            self.irc_conn.connect(ip_address=ip_address, port=6667)
+        port = 6697 if enable_ssl else 6667
+        self.irc_conn.connect(ip_address=ip_address, port=port, enable_ssl=enable_ssl)
