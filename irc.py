@@ -14,8 +14,8 @@ def parse(raw_message):
         The host of the IRC message (nick!user@host).
     command: str
         The IRC command.
-    channel: str
-        The channel in which the message was sent (#channel).
+    target: str
+        The target to which the message was sent (usually #channel or nick).
     text: str
         The text sent (the last value in `args`).
     args: list
@@ -35,9 +35,9 @@ def parse(raw_message):
 
     command = args.pop(0)
     nick = host.split("!", 2)[0] if "!" in host else ""
-    channel = args[0] if args[0][0] is "#" else ""
+    target = args[0] if len(args) > 0 else ""
     text = args[-1] if len(args) > 0 else ""
-    return nick, host, command, channel, text, args
+    return nick, host, command, target, text, args
 
 
 class IRCMessage(object):
@@ -54,13 +54,13 @@ class IRCMessage(object):
         """
         # Parse the raw message.
         self.raw = raw_message
-        self.nick, self.host, self.command, self.channel, self.text, self.args = parse(raw_message)
+        self.nick, self.host, self.command, self.target, self.text, self.args = parse(raw_message)
 
     def __str__(self):
         return "Raw: " + self.raw + \
             "\r\nNick: " + str(self.nick) + \
             "\r\nHost: " + str(self.host) + \
             "\r\nCommand: " + str(self.command) + \
-            "\r\nChannel: " + str(self.channel) + \
+            "\r\nTarget: " + str(self.target) + \
             "\r\nText: " + str(self.text) + \
             "\r\nArgs: " + str(self.args)

@@ -1,6 +1,6 @@
-from irc_connection import IRCConnection
 from commands import Commands
 from connection import MessageListener
+from irc_connection import IRCConnection
 
 
 class ConnectionTest:
@@ -13,11 +13,13 @@ class ConnectionTest:
             print(msg)
             print("\r\n")
             if msg.command == Commands.PRIVMSG:
-                if msg.args[0] == self.irc_conn.nick:
-                    if msg.args[1].startswith("join"):
-                        self.irc_conn.cmd_join(msg.args[1].split(" ")[1:])
-                elif msg.args[1].startswith("!repeat"):
-                    self.irc_conn.cmd_privmsg(msg.args[0], " ".join(msg.args[1].split(" ")[1:]))
+                if msg.text.startswith("join "):
+                    self.irc_conn.cmd_join(msg.text.split(" ")[1:])
+                elif msg.text.startswith("!repeat "):
+                    reply_location = msg.target if msg.target.startswith("#") else msg.nick
+                    self.irc_conn.cmd_privmsg(reply_location, " ".join(msg.text.split(" ")[1:]))
+                elif msg.text.startswith("!pm "):
+                    self.irc_conn.cmd_privmsg(msg.nick, " ".join(msg.text.split(" ")[1:]))
 
         self.irc_conn.add_listener(MessageListener(lambda msg: True, receive=receive))
 
