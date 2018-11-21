@@ -1,5 +1,5 @@
 def parse(raw_message):
-    """Breaks a message from an IRC server into its prefix, command, and arguments.
+    """Breaks a message from an IRC server into components.
 
     Parameters
     ----------
@@ -8,18 +8,24 @@ def parse(raw_message):
 
     Returns
     -------
-    prefix: str
-        The prefix of the IRC message.
+    nick: str
+        The nick name of the sender.
+    host: str
+        The host of the IRC message (nick!user@host).
     command: str
         The IRC command.
+    channel: str
+        The channel in which the message was sent (#channel).
+    text: str
+        The text sent (the last value in `args`).
     args: list
         The arguments in the IRC message.
     """
-    prefix = ""
+    host = ""
     if not raw_message:
         raise Exception("Cannot parse an empty message.")
     if raw_message[0] == ":":
-        prefix, raw_message = raw_message[1:].split(" ", 1)
+        host, raw_message = raw_message[1:].split(" ", 1)
     if raw_message.find(" :") != -1:
         raw_message, trailing = raw_message.split(" :", 1)
         args = raw_message.split()
@@ -28,7 +34,10 @@ def parse(raw_message):
         args = raw_message.split()
 
     command = args.pop(0)
-    return prefix, command, args
+    nick = host.split("!", 2)[0] if "!" in host else ""
+    channel = args[0] if args[0][0] is "#" else ""
+    text = args[-1] if len(args) > 0 else ""
+    return nick, host, command, channel, text, args
 
 
 class IRCMessage(object):
@@ -45,10 +54,13 @@ class IRCMessage(object):
         """
         # Parse the raw message.
         self.raw = raw_message
-        self.prefix, self.command, self.args = parse(raw_message)
+        self.nick, self.host, self.command, self.channel, self.text, self.args = parse(raw_message)
 
     def __str__(self):
         return "Raw: " + self.raw + \
-            "\r\nPrefix: " + str(self.prefix) + \
+            "\r\nNick: " + str(self.nick) + \
+            "\r\nHost: " + str(self.host) + \
             "\r\nCommand: " + str(self.command) + \
+            "\r\nChannel: " + str(self.channel) + \
+            "\r\nText: " + str(self.text) + \
             "\r\nArgs: " + str(self.args)

@@ -16,6 +16,8 @@ class ConnectionTest:
                 if msg.args[0] == self.irc_conn.nick:
                     if msg.args[1].startswith("join"):
                         self.irc_conn.cmd_join(msg.args[1].split(" ")[1:])
+                elif msg.args[1].startswith("!repeat"):
+                    self.irc_conn.cmd_privmsg(msg.args[0], " ".join(msg.args[1].split(" ")[1:]))
 
         self.irc_conn.add_listener(MessageListener(lambda msg: True, receive=receive))
 
