@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-   name="irc",
+   name="irc_api",
    version="0.1",
    description="A simple API for IRC networks",
    author="Avahe Kellenberger",
