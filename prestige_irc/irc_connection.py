@@ -1,10 +1,10 @@
 import socket
 import ssl
 
-from irc import connection
-from irc.commands import Commands
-from irc.connection import MessageListener
-from irc.message import IRCMessage
+from prestige_irc import connection
+from prestige_irc.commands import Commands
+from prestige_irc.connection import MessageListener
+from prestige_irc.message import IRCMessage
 
 
 class IRCConnection(connection.Connection):

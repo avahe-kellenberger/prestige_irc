@@ -1,6 +1,6 @@
-from irc.commands import Commands
-from irc.connection import MessageListener
-from irc.irc_connection import IRCConnection
+from prestige_irc.commands import Commands
+from prestige_irc.connection import MessageListener
+from prestige_irc.irc_connection import IRCConnection
 
 if __name__ == '__main__':
 

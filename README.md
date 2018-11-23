@@ -8,7 +8,7 @@ Initialize a connection to an IRC network by creating a new `IRCConnection`, and
 
 ```python
 irc_connection = IRCConnection("YourBotsNick")
-irc_connection.connect(ip_address="irc.freenode.net")
+irc_connection.connect(ip_address=prestige_irc)
 ```
 
 ## Listeners:
