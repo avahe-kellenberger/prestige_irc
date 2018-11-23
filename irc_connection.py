@@ -30,7 +30,7 @@ class IRCConnection(connection.Connection):
         """Processes the bytes that are received from the server, and converts them into an IRCMessage."""
         return IRCMessage(data.decode("utf-8"))
 
-    def connect(self, ip_address, port, timeout=None, enable_ssl=False):
+    def connect(self, ip_address, port=6697, timeout=None, enable_ssl=True):
         """
         Attempts to connect to the specified IP address and port.
 
@@ -40,12 +40,14 @@ class IRCConnection(connection.Connection):
             The IP address to connect to.
         port: int
             The port number to bind to.
+            Default value is 6697, which is the default port for TLS/SSL connections
+            (See https://datatracker.ietf.org/doc/rfc7194/ for details).
         timeout: int|None (optional)
             The number of seconds to wait to stop attempting to connect if a connection has not yet been made.
             Default value is None.
         enable_ssl: bool (optional)
             If the connection should be made with SSL.
-            Default value is False.
+            Default value is True.
 
         Returns
         -------
@@ -590,19 +592,19 @@ class IRCConnection(connection.Connection):
         self.__nick = nick
         self.send_command(command=Commands.NICK, params=nick)
 
-    def cmd_privmsg(self, channel_or_user, message):
+    def cmd_privmsg(self, target, message):
         """
         Send a message to a channel or a user.
 
         Parameters
         ----------
-        channel_or_user: str
+        target: str
             The user or channel to send a message to. If a channel, it must be prefixed with '#'.
         message: str
             The message to send.
         """
         self.send_command(command=Commands.PRIVMSG,
-                          params=channel_or_user + " :" + message)
+                          params=target + " :" + message)
 
     def cmd_user(self, real_name, invisible=False):
         """

@@ -206,7 +206,7 @@ class MessageListener(object):
             A method which takes a message as a parameter, and returns if the message should be accepted or not.
         receive: (object) -> None
             A method which takes a message as a parameter.
-            This should typically be called after message_filter returns True.
+            This should only be called after message_filter returns True.
         """
         self.__filter = message_filter
         self.__receive = receive
