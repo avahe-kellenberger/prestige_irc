@@ -16,6 +16,7 @@ if __name__ == '__main__':
             elif msg.text.startswith("!pm "):
                 irc_connection.cmd_privmsg(msg.nick, " ".join(msg.text.split(" ")[1:]))
 
+
     print("---Starting tests on connection.py---")
     irc_connection = IRCConnection("PrestigeBot")
 

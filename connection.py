@@ -12,7 +12,7 @@ class Connection(object):
         self.__is_connection_alive = False
         self.__listen_thread = None
         self.__listeners = set()
-    
+
     def connect(self, ip_address, port, timeout=None):
         """Connect to a server.
 
@@ -89,7 +89,7 @@ class Connection(object):
             self.__is_connection_alive = False
             return True
         return False
-        
+
     @property
     def is_connection_alive(self):
         """
@@ -99,7 +99,7 @@ class Connection(object):
             If the connection is currently connected.
         """
         return self.__is_connection_alive
-    
+
     def send_data(self, data):
         """Sends bytes across the connection.
 
@@ -122,7 +122,7 @@ class Connection(object):
             Default value is True.
         """
         self.send_data(bytes(message + "\r\n" if crlf_ending and not message.endswith("\r\n") else message, "utf-8"))
-    
+
     def add_listener(self, listener):
         """Adds a listener to the connection.
 
@@ -213,7 +213,7 @@ class MessageListener(object):
 
     def accept(self, message):
         """
-        Calls the <message_filter> parameter passed into the constructor.
+        Calls the `message_filter` parameter passed into the constructor.
 
         Parameters
         ----------
@@ -228,7 +228,7 @@ class MessageListener(object):
 
     def receive(self, message):
         """
-        Calls the <receive> parameter passed into the constructor.
+        Calls the `receive` parameter passed into the constructor.
 
         Parameters
         ----------

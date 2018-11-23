@@ -186,8 +186,8 @@ class IRCConnection(connection.Connection):
 
     def cmd_admin(self, target=""):
         """
-        Instructs the server to return information about the administrators of the server specified by <target>,
-        where <target> is either a server or a user. If <target> is omitted, the server should return information
+        Instructs the server to return information about the administrators of the server specified by `target`,
+        where `target` is either a server or a user. If `target` is omitted, the server should return information
         about the administrators of the current server.
 
         Parameters
@@ -200,8 +200,8 @@ class IRCConnection(connection.Connection):
 
     def cmd_away(self, message=""):
         """
-        Provides the server with a <message> to automatically send in reply to a PRIVMSG directed at the user,
-        but not to a channel they are on. If <message> is omitted, the away status is removed.
+        Provides the server with a `message` to automatically send in reply to a PRIVMSG directed at the user,
+        but not to a channel they are on. If `message` is omitted, the away status is removed.
 
         Parameters
         ----------
@@ -213,7 +213,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_cnotice(self, nickname, channel, message):
         """
-        Sends a channel NOTICE message to <nickname> on <channel> that bypasses flood protection limits.
+        Sends a channel NOTICE message to `nickname` on `channel` that bypasses flood protection limits.
         The target nickname must be in the same channel as the client issuing the command,
         and the client must be a channel operator.
 
@@ -240,7 +240,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_cprivmsg(self, nickname, channel, message):
         """
-        Sends a private message to <nickname> on <channel> that bypasses flood protection limits.
+        Sends a private message to `nickname` on `channel` that bypasses flood protection limits.
         The target nickname must be in the same channel as the client issuing the command,
         and the client must be a channel operator.
 
@@ -267,8 +267,8 @@ class IRCConnection(connection.Connection):
 
     def cmd_connect(self, target_server, port, remote_server=None):
         """
-        Instructs the server <remote server> (or the current server, if <remote server> is omitted)
-        to connect to <target server> on port <port>.
+        Instructs the server `remote server` (or the current server, if `remote server` is omitted)
+        to connect to `target server` on port `port`.
         This command should only be available to IRC Operators.
 
         Parameters
@@ -338,7 +338,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_info(self, target=""):
         """
-        Returns information about the <target> server, or the current server if <target> is omitted.
+        Returns information about the `target` server, or the current server if `target` is omitted.
         Information returned includes the server's version, when it was compiled, the patch level, when it was started,
         and any other information which may be considered to be relevant.
 
@@ -352,7 +352,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_invite(self, nickname, channel):
         """
-        Invites <nickname> to the channel <channel>. <channel> does not have to exist, but if it does,
+        Invites `nickname` to the channel `channel`. `channel` does not have to exist, but if it does,
         only members of the channel are allowed to invite other clients.
         If the channel mode i is set, only channel operators may invite other clients.
 
@@ -367,7 +367,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_ison(self, nicknames):
         """
-        Queries the server to see if the clients in the list <nicknames> are currently on the network.
+        Queries the server to see if the clients in the list `nicknames` are currently on the network.
         The server returns only the nicknames that are on the network in a list.
         If none of the clients are on the network, the server returns an empty list.
 
@@ -394,7 +394,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_kick(self, channel, nickname, message=""):
         """
-        Forcibly removes <nickname> from <channel>.
+        Forcibly removes `nickname` from `channel`.
         This command may only be issued by channel operators.
 
         Parameters
@@ -412,7 +412,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_kill(self, nickname, message):
         """
-        Forcibly removes <nickname> from the network. This command may only be issued by IRC operators.
+        Forcibly removes `nickname` from the network. This command may only be issued by IRC operators.
 
         Parameters
         ----------
@@ -425,7 +425,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_knock(self, channel, message=""):
         """
-        Sends a NOTICE to an invitation-only <channel> with an optional <message>, requesting an invite.
+        Sends a NOTICE to an invitation-only `channel` with an optional `message`, requesting an invite.
         This command is not formally defined by an RFC, but is supported by most major IRC daemons.
         Support is indicated in a RPL_ISUPPORT reply (numeric 005) with the KNOCK keyword.
 
@@ -440,7 +440,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_links(self, remote_server="", server_mask=""):
         """
-        Lists all server links matching <server mask>, if given, on <remote server>, or the current server if omitted.
+        Lists all server links matching `server mask`, if given, on `remote server`, or the current server if omitted.
 
         Parameters
         ----------
@@ -456,8 +456,8 @@ class IRCConnection(connection.Connection):
     def cmd_list(self, channels=None, server=""):
         """
         Lists all channels on the server.
-        If the list <channels> is given, it will return the channel topics.
-        If <server> is given, the command will be forwarded to <server> for evaluation.
+        If the list `channels` is given, it will return the channel topics.
+        If `server` is given, the command will be forwarded to `server` for evaluation.
 
         Parameters
         ----------
@@ -475,9 +475,9 @@ class IRCConnection(connection.Connection):
         """
         The LUSERS command is used to get statistics about the size of the IRC network.
         If no parameter is given, the reply will be about the whole net.
-        If a <mask> is specified, then the reply will only concern the part of the network
+        If a `mask` is specified, then the reply will only concern the part of the network
         formed by the servers matching the mask.
-        Finally, if the <target> parameter is specified, the request is forwarded
+        Finally, if the `target` parameter is specified, the request is forwarded
         to that server which will generate the reply.
 
         Parameters
@@ -552,7 +552,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_motd(self, server=""):
         """
-        Returns the message of the day on <server> or the current server if it is omitted.
+        Returns the message of the day on `server` or the current server if it is omitted.
 
         Parameters
         ----------
@@ -563,10 +563,10 @@ class IRCConnection(connection.Connection):
 
     def cmd_names(self, channels=None, server=""):
         """
-        Returns a list of who is on the comma-separated list of <channels>, by channel name.
-        If <channels> is omitted, all users are shown, grouped by channel name with all users who are not on a channel
+        Returns a list of who is on the comma-separated list of `channels`, by channel name.
+        If `channels` is omitted, all users are shown, grouped by channel name with all users who are not on a channel
         being shown as part of channel "*".
-        If <server> is specified, the command is sent to <server> for evaluation.
+        If `server` is specified, the command is sent to `server` for evaluation.
 
         Parameters
         ----------
@@ -574,7 +574,7 @@ class IRCConnection(connection.Connection):
             The channels from which to return the list of user nicks.
             If omitted, all users are returned.
         server: str (optional)
-            If <server> is specified, the command is sent to <server> for evaluation.
+            If `server` is specified, the command is sent to `server` for evaluation.
         """
         self.send_command(command=Commands.NAMES,
                           params=",".join(channel for channel in channels) +
