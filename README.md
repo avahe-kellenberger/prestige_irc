@@ -1,4 +1,4 @@
-# irc_api
+# prestige_irc
 
 This module is a simple API for IRC networks.
 
