@@ -1,11 +1,11 @@
 from setuptools import setup
 
 setup(
-   name="irc_api",
+   name="prestige_irc",
    version="0.1",
    description="A simple API for IRC networks",
    author="Avahe Kellenberger",
    author_email="avahe@protonmail.ch",
-   package_dir={"": "irc_api"},
-   packages=["prestige_irc"]
+   package_dir={"": "irc"},
+   packages=["irc"]
 )
