@@ -6,5 +6,5 @@ setup(
    description="A simple API for IRC networks",
    author="Avahe Kellenberger",
    author_email="avahe@protonmail.ch",
-   packages=["irc"]
+   packages=["prestige_irc"]
 )
