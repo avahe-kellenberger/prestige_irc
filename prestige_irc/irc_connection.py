@@ -1,10 +1,10 @@
 import socket
 import ssl
 
-from irc import connection
-from irc.commands import Commands
-from irc.connection import MessageListener
-from irc.message import IRCMessage
+from prestige_irc import connection
+from prestige_irc.commands import Commands
+from prestige_irc.connection import MessageListener
+from prestige_irc.message import IRCMessage
 
 
 class IRCConnection(connection.Connection):
@@ -13,12 +13,12 @@ class IRCConnection(connection.Connection):
 
     def __init__(self, nick):
         """
-        Readies the connection to the irc network, and sets up the initial nick name to use.
+        Readies the connection to the prestige_irc network, and sets up the initial nick name to use.
 
         Parameters
         ----------
         nick: str
-            The irc nick name to use.
+            The prestige_irc nick name to use.
         """
         super().__init__()
         # Set the local user nickname.
@@ -166,7 +166,7 @@ class IRCConnection(connection.Connection):
         Parameters
         ----------
         command: str
-            The irc command, which can be found in commands.Commands.
+            The prestige_irc command, which can be found in commands.Commands.
         prefix: str (optional)
             A prefix to the command.
             Default value is an empty string.
@@ -583,7 +583,7 @@ class IRCConnection(connection.Connection):
 
     def cmd_nick(self, nick):
         """
-        Attempts to set the user's nick on the irc server.
+        Attempts to set the user's nick on the prestige_irc server.
 
         Parameters
         ----------
@@ -615,7 +615,7 @@ class IRCConnection(connection.Connection):
         Parameters
         ----------
         real_name: str
-            The user's 'real name' which is visible to other members on the irc network.
+            The user's 'real name' which is visible to other members on the prestige_irc network.
         invisible: bool (optional)
             If the user wishes to remain invisible to other members on the network, aside from other members in the same
             channel(s).
