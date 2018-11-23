@@ -1,4 +1,4 @@
-# irc-api
+# irc_api
 
 This module is a simple API for IRC networks.
 
