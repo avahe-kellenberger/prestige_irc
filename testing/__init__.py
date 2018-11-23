@@ -1,6 +1,6 @@
-from commands import Commands
-from connection import MessageListener
-from irc_connection import IRCConnection
+from irc.commands import Commands
+from irc.connection import MessageListener
+from irc.irc_connection import IRCConnection
 
 if __name__ == '__main__':
 

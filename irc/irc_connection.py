@@ -1,9 +1,10 @@
-import connection
-import ssl
 import socket
-from connection import MessageListener
-from irc import IRCMessage
-from commands import Commands
+import ssl
+
+from irc import connection
+from irc.commands import Commands
+from irc.connection import MessageListener
+from irc.message import IRCMessage
 
 
 class IRCConnection(connection.Connection):
