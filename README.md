@@ -2,6 +2,17 @@
 
 This module is a simple API for IRC networks.
 
+## Installation
+
+Clone this repository into your repo, and install `setup.py`:
+
+```python
+git clone https://github.com/avahe-kellenberger/prestige_irc.git
+cd prestige_irc
+python setup.py install
+```
+You should now be able to import modules, e.g. `from prestige_irc.commands import Commands`
+
 ## Creating a connection
 
 Initialize a connection to an IRC network by creating a new `IRCConnection`, and invoking the `connect` function.
