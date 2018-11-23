@@ -1,22 +1,45 @@
 # irc-api
 
-**NOTE: Currently under development**
+This module is a simple API for IRC networks.
 
-This module will be a simple IRC connection tool in which users listen and send messages to the server.
+## Creating a connection
 
-### Listeners:
-  Users can attach listeners for server messages, as well as add filters for said message objects.
-  Filters will allow the user to accept messages via irc.MessageListener#accept, 
-  and should then use connection.MessageListener#receive to handle the messages. See documentation for details.
+Initialize a connection to an IRC network by creating a new `IRCConnection`, and invoking the `connect` function.
 
-### Sending Messages:
-  Users will be able to send raw messages to the server, 
-  or preset command types (such as IRCConnection.cmd_join(channels)).
-  These preset commands will handle the message formatting that the IRC server requires, 
-  with documentation reflecting the RFC.
+```python
+irc_connection = IRCConnection("YourBotsNick")
+irc_connection.connect(ip_address="irc.freenode.net")
+```
+
+## Listeners:
+
+Add message listeners to the `IRCConnection` object.
+
+```python
+def receive(msg):
+    if msg.command == Commands.PRIVMSG:
+        print(msg.text)
+
+listener = MessageListener(message_filter=lambda msg: True, receive=receive)
+irc_connection.add_listener(listener)
+```
+
+Attach a listener for server messages, and add filters for said message objects.
+Filters are invoked by `irc.MessageListener#accept`, which is automatically called when an `IRCConnection` receieves a message.
+When this method returns true, `irc.MessageListener#receive` is invoked.
+
+See the code documentation for details.
+
+## Sending Messages:
+
+Most commands are supported by the API by default, and are placed in `IRCConnection`.
+Commands are prefixed with `cmd_`, such as `cmd_privmsg`, `cmd_join`, and `cmd_kick`.
+
+These preset commands will handle the message formatting that the IRC server requires, with documentation reflecting the RFC.
+Commands that are not yet supported by default can be sent manually with `IRCConnection.send_command` and/or `IRCConnection.send`. 
   
-#### Speculative Updates:
+## Speculative Updates:
   In the future, this module may support every RFC specified IRC command, but it's not likely. 
   This is a side project for personal use and probably will not be extended in functionality 
   once it meets my requirements.
-  
+ 
