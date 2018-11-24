@@ -1,8 +1,7 @@
+.idea/*
 /.project
 /.pydevproject
 *.iml
 *.xml
-.idea/dictionaries/
-.idea/inspectionProfiles/
 __pycache__/
 /venv
