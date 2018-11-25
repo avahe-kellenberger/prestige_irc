@@ -2,7 +2,17 @@
 
 This module is a simple API for IRC networks.
 
-## Installation
+# Installation
+
+## pip
+
+`pip install prestige_irc`
+
+or
+
+`python -m pip install prestige_irc`
+
+## Manually
 
 Clone this repository into your repo, and install `setup.py`:
 
@@ -12,6 +22,8 @@ cd prestige_irc
 python setup.py install
 ```
 You should now be able to import modules, e.g. `from prestige_irc.commands import Commands`
+
+# API Usage
 
 ## Creating a connection
 
@@ -49,8 +61,6 @@ Commands are prefixed with `cmd_`, such as `cmd_privmsg`, `cmd_join`, and `cmd_k
 These preset commands will handle the message formatting that the IRC server requires, with documentation reflecting the RFC.
 Commands that are not yet supported by default can be sent manually with `IRCConnection.send_command` and/or `IRCConnection.send`. 
   
-## Speculative Updates:
-  In the future, this module may support every RFC specified IRC command, but it's not likely. 
-  This is a side project for personal use and probably will not be extended in functionality 
-  once it meets my requirements.
+# Speculative Updates:
+In the future, this module may support every RFC specified IRC command, if it becomes widely requested.
  
