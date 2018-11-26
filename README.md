@@ -53,7 +53,7 @@ When this method returns true, `irc.MessageListener#receive` is invoked.
 
 See the code documentation for details.
 
-## Sending Messages:
+## Sending messages and IRC commands:
 
 Most commands are supported by the API by default, and are placed in `IRCConnection`.
 Commands are prefixed with `cmd_`, such as `cmd_privmsg`, `cmd_join`, and `cmd_kick`.
