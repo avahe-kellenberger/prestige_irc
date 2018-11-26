@@ -169,7 +169,7 @@ class Connection(object):
             The object to send to the listeners.
         """
         for listener in self.__listeners:
-            if listener.accept(obj):
+            if listener.accept is None or listener.accept(obj):
                 listener.receive(obj)
 
     def __listen(self, buffer_size=4096):
@@ -179,7 +179,7 @@ class Connection(object):
         ----------
         buffer_size: int
             The number of bytes for the socket to receive.
-            Default value is 4096.
+            Default value is `4096`.
         """
 
         while self.__is_connection_alive:
@@ -195,21 +195,23 @@ class Connection(object):
 
 class MessageListener(object):
 
-    def __init__(self, message_filter, receive):
+    def __init__(self, receive, message_filter=None):
         """
         Listens for messages, and uses a filter to determine if the message should be accepted by the listener.
         If the message should be accepted, the implementation should then call MessageListener#receive.
 
         Parameters
         ----------
-        message_filter: (object) -> bool
-            A method which takes a message as a parameter, and returns if the message should be accepted or not.
         receive: (object) -> None
             A method which takes a message as a parameter.
             This should only be called after message_filter returns True.
+        message_filter: (object|None) -> bool
+            A method which takes a message as a parameter, and returns if the message should be accepted or not.
+            If the `message_filter` is `None`, all messages will be accepted and passed to `receive`.
+            Default value is `None`.
         """
-        self.__filter = message_filter
         self.__receive = receive
+        self.__filter = message_filter
 
     def accept(self, message):
         """
@@ -224,7 +226,7 @@ class MessageListener(object):
         -------
         True if the message should be accepted, otherwise False.
         """
-        return self.__filter(message)
+        return self.__filter is None or self.__filter(message)
 
     def receive(self, message):
         """

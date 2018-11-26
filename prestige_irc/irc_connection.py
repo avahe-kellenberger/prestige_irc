@@ -24,8 +24,8 @@ class IRCConnection(connection.Connection):
         # Set the local user nickname.
         self.__nick = nick
         # Listener which automatically handles ping responses.
-        self.add_listener(MessageListener(lambda msg: msg.command == Commands.PING,
-                                          lambda msg: self.cmd_pong(msg.args[0])))
+        self.add_listener(MessageListener(message_filter=lambda msg: msg.command == Commands.PING,
+                                          receive=lambda msg: self.cmd_pong(msg.target)))
 
     def _process_data(self, data):
         """Processes the bytes that are received from the server, and converts them into an IRCMessage."""
@@ -144,6 +144,9 @@ class IRCConnection(connection.Connection):
     def nick(self):
         """
         Gets the user's nick.
+
+        The internal property is initialized in the constructor, changed with the use of `cmd_nick`,
+        and should not be modified by other means.
 
         Returns
         -------
@@ -331,9 +334,6 @@ class IRCConnection(connection.Connection):
         """
         Requests the server help file.
         This command is not formally defined in an RFC, but is in use by most major IRC daemons.
-
-        Parameters
-        ----------
         """
         self.send_command(command=Commands.HELP)
 

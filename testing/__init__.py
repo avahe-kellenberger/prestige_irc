@@ -21,5 +21,5 @@ if __name__ == '__main__':
     irc_connection = IRCConnection("PrestigeBot")
 
     irc_connection.connect(ip_address="irc.rizon.net")
-    listener = MessageListener(message_filter=lambda msg: True, receive=receive)
+    listener = MessageListener(receive=receive)
     irc_connection.add_listener(listener)
