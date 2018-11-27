@@ -1,6 +1,6 @@
 class Commands:
 
-    """A list of IRC commands.
+    """A list of IRC commands, which are used in `IRCConnection`.
 
     This list of commands is based on:
         https://en.wikipedia.org/wiki/List_of_Internet_Relay_Chat_commands
