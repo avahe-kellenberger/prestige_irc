@@ -4,6 +4,10 @@ import threading
 
 class Connection(object):
 
+    """
+    A class for basic generic connectivity.
+    """
+
     def __init__(self):
         """
         Readies a connection to a server at a specific port, and keeps the connection alive.
@@ -41,7 +45,7 @@ class Connection(object):
         return self.connect_socket(sock=sock, ip_address=ip_address, port=port)
 
     def connect_socket(self, sock, ip_address, port):
-        """Connect to a server.
+        """Connect to a server using the given socket.
 
         Parameters
         ----------
@@ -92,7 +96,8 @@ class Connection(object):
 
     @property
     def is_connection_alive(self):
-        """
+        """Checks if connection is still live.
+
         Returns
         -------
         bool:
