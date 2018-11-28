@@ -25,7 +25,7 @@ You should now be able to import modules, e.g. `from prestige_irc.commands impor
 
 # Documentation
 
-[View the documentation.](https://github.com/avahe-kellenberger/prestige_irc/wiki/Documentation---Home)
+[View the documentation.](https://github.com/avahe-kellenberger/prestige_irc/wiki/Documentation-Home)
   
 # Speculative Updates:
 In the future, this module may support every RFC specified IRC command, if it becomes widely requested.
