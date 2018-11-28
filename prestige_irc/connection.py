@@ -200,10 +200,14 @@ class Connection(object):
 
 class MessageListener(object):
 
+    """
+    Listens for messages, and uses a filter to determine if the message should be accepted by the listener.
+    If the message should be accepted, the implementation should then call MessageListener#receive.
+    """
+
     def __init__(self, receive, message_filter=None):
         """
-        Listens for messages, and uses a filter to determine if the message should be accepted by the listener.
-        If the message should be accepted, the implementation should then call MessageListener#receive.
+        Creates the listener.
 
         Parameters
         ----------
