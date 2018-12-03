@@ -28,7 +28,14 @@ class IRCConnection(connection.Connection):
                                           receive=lambda msg: self.cmd_pong(msg.target)))
 
     def _process_data(self, data):
-        """Processes the bytes that are received from the server, and converts them into an IRCMessage."""
+        """
+        Processes the bytes that are received from the server, and converts them into an IRCMessage.
+
+        Parameters
+        ----------
+        data: bytes
+            The bytes to convert into an `IRCMessage`.
+        """
         return IRCMessage(data.decode("utf-8"))
 
     def connect(self, ip_address, port=6697, timeout=None, enable_ssl=True):
@@ -113,7 +120,7 @@ class IRCConnection(connection.Connection):
 
         Parameters
         ----------
-        sock: socket
+        sock: SSLSocket
             The socket to connect with.
         ip_address: str
             The IP address of the server.
