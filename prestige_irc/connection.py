@@ -192,7 +192,8 @@ class Connection(object):
             if data:
                 # Messages are separated by CR-LF. Last element is removed since it will be empty.
                 for msg in data.split(b"\r\n")[:1]:
-                    self.__dispatch_listeners(self._process_data(msg))
+                    if msg:
+                        self.__dispatch_listeners(self._process_data(msg))
             else:
                 # Connection terminated by server: data was empty.
                 self.__is_connection_alive = False

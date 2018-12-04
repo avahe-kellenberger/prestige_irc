@@ -20,6 +20,6 @@ if __name__ == '__main__':
     print("---Starting tests on connection.py---")
     irc_connection = IRCConnection("PrestigeBot")
 
-    irc_connection.connect(ip_address="irc.rizon.net")
+    irc_connection.connect(ip_address="irc.moparisthebest.com")
     listener = MessageListener(receive=receive)
     irc_connection.add_listener(listener)
