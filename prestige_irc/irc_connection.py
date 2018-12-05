@@ -24,8 +24,8 @@ class IRCConnection(connection.Connection):
         # Set the local user nickname.
         self.__nick = nick
         # Listener which automatically handles ping responses.
-        self.add_listener(MessageListener(message_filter=lambda msg: msg.command == Commands.PING,
-                                          receive=lambda msg: self.cmd_pong(msg.target)))
+        self.add_listener(MessageListener(message_filter=lambda conn, msg: msg.command == Commands.PING,
+                                          receive=lambda conn, msg: conn.cmd_pong(msg.target)))
 
     def _process_data(self, data):
         """

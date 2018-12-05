@@ -174,8 +174,8 @@ class Connection(object):
             The object to send to the listeners.
         """
         for listener in self.__listeners:
-            if listener.accept is None or listener.accept(obj):
-                listener.receive(obj)
+            if listener.accept is None or listener.accept(connection=self, message=obj):
+                listener.receive(connection=self, message=obj)
 
     def __listen(self, buffer_size=4096):
         """Listens to incoming data from the socket.
@@ -212,39 +212,44 @@ class MessageListener(object):
 
         Parameters
         ----------
-        receive: (object) -> None
+        receive: (Connection, object) -> None
             A method which takes a message as a parameter.
             This should only be called after message_filter returns True.
-        message_filter: (object|None) -> bool
-            A method which takes a message as a parameter, and returns if the message should be accepted or not.
+        message_filter: (Connection, object|None) -> bool
+            A method which takes a connection and a message as parameters,
+            and returns if the message should be accepted or not.
             If the `message_filter` is `None`, all messages will be accepted and passed to `receive`.
-            Default value is `None`.
+            Default value of `message_filter` is `None`.
         """
         self.__receive = receive
         self.__filter = message_filter
 
-    def accept(self, message):
+    def accept(self, connection, message):
         """
         Calls the `message_filter` parameter passed into the constructor.
 
         Parameters
         ----------
+        connection: Connection
+            The connection the message was sent over.
         message: object
             The message received.
 
         Returns
         -------
-        True if the message should be accepted, otherwise False.
+        bool: If the message should be accepted.
         """
-        return self.__filter is None or self.__filter(message)
+        return self.__filter is None or self.__filter(connection, message)
 
-    def receive(self, message):
+    def receive(self, connection, message):
         """
         Calls the `receive` parameter passed into the constructor.
 
         Parameters
         ----------
+        connection: Connection
+            The connection the message was sent over.
         message: object
             The message being received.
         """
-        self.__receive(message)
+        self.__receive(connection, message)
