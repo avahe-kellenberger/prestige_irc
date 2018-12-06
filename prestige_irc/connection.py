@@ -49,7 +49,7 @@ class Connection(object):
 
         Parameters
         ----------
-        sock: socket
+        sock: socket.py
             The unconnected socket with which to establish the connection.
         ip_address: str
             The IP address of the server.
@@ -73,8 +73,8 @@ class Connection(object):
                 self.__is_connection_alive = True
                 self.__listen_thread = threading.Thread(target=self.__listen)
                 self.__listen_thread.start()
-            except socket.error as exc:
-                print("Caught exception socket.error : " + str(exc))
+            except socket.error as err:
+                print(f'Caught exception socket.error:\n{str(err)}')
                 self.__is_connection_alive = False
             return self.__is_connection_alive
 
@@ -126,7 +126,7 @@ class Connection(object):
             If the method should ensure the message ends with CR-LF.
             Default value is True.
         """
-        self.send_data(bytes(message + "\r\n" if crlf_ending and not message.endswith("\r\n") else message, "utf-8"))
+        self.send_data(bytes(f'{message}\r\n' if crlf_ending and not message.endswith('\r\n') else message, 'utf-8'))
 
     def add_listener(self, listener):
         """Adds a listener to the connection.
@@ -174,7 +174,7 @@ class Connection(object):
             The object to send to the listeners.
         """
         for listener in self.__listeners:
-            if listener.accept is None or listener.accept(connection=self, message=obj):
+            if listener.accept(connection=self, message=obj):
                 listener.receive(connection=self, message=obj)
 
     def __listen(self, buffer_size=4096):
@@ -188,10 +188,11 @@ class Connection(object):
         """
 
         while self.__is_connection_alive:
+            # TODO: Check why recv would return empty data. This is setting the connection_alive flag incorrectly.
             data = self.__socket.recv(buffer_size)
             if data:
                 # Messages are separated by CR-LF. Last element is removed since it will be empty.
-                for msg in data.split(b"\r\n")[:1]:
+                for msg in data.split(b'\r\n')[:1]:
                     if msg:
                         self.__dispatch_listeners(self._process_data(msg))
             else:
