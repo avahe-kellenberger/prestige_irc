@@ -188,7 +188,6 @@ class Connection(object):
         """
 
         while self.__is_connection_alive:
-            # TODO: Check why recv would return empty data. This is setting the connection_alive flag incorrectly.
             data = self.__socket.recv(buffer_size)
             if data:
                 # Messages are separated by CR-LF. Last element is removed since it will be empty.
