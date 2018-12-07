@@ -187,11 +187,28 @@ class Connection(object):
             Default value is `4096`.
         """
 
+        trailing = b''
         while self.__is_connection_alive:
             data = self.__socket.recv(buffer_size)
             if data:
+
+                # Handle messages which are only CRLFs.
+                if data == b'\r\n':
+                    self.__dispatch_listeners(self._process_data(trailing))
+                    trailing = b''
+
                 # Messages are separated by CR-LF. Last element is removed since it will be empty.
-                for msg in data.split(b'\r\n')[:1]:
+                split = data.split(b'\r\n')
+                trailing += split.pop()
+
+                # Ensure trailing information is added to the start of the next message.
+                msg_count = len(split)
+                if msg_count > 0:
+                    split[0] = trailing + split[0]
+                    trailing = b''
+
+                for i in range(msg_count):
+                    msg = split[i]
                     if msg:
                         self.__dispatch_listeners(self._process_data(msg))
             else:
