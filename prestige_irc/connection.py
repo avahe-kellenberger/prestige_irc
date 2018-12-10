@@ -151,7 +151,7 @@ class Connection(object):
         self.__listeners.remove(listener)
 
     def _process_data(self, data):
-        """Processed the bytes received by the server.
+        """Processes the bytes received by the server.
 
         Parameters
         ----------
