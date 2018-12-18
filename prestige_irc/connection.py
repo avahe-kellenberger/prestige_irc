@@ -173,9 +173,11 @@ class Connection(object):
         obj: object
             The object to send to the listeners.
         """
-        for listener in self.__listeners:
-            if listener.accept(connection=self, message=obj):
-                listener.receive(connection=self, message=obj)
+        def notify():
+            for listener in self.__listeners:
+                if listener.accept(connection=self, message=obj):
+                    listener.receive(connection=self, message=obj)
+        threading.Thread(target=notify).start()
 
     def __listen(self, buffer_size=4096):
         """Listens to incoming data from the socket.

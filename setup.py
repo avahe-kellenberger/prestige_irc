@@ -5,7 +5,7 @@ with open("README.md", "r") as f:
 
 setup(
     name="prestige_irc",
-    version="0.0.5.post0",
+    version="0.0.6",
     author="Avahe Kellenberger",
     author_email="avahe@protonmail.ch",
     description="A simple API for IRC networks",
