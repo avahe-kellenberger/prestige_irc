@@ -5,3 +5,4 @@
 *.xml
 __pycache__/
 /venv
+testing/*
