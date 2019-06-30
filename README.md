@@ -8,22 +8,25 @@ Note that this project is `python 3.6` or higher, since it uses fstrings.
 
 ## pip
 
-`pip install prestige_irc`
+`$ pip install prestige_irc`
 
 or
 
-`python -m pip install prestige_irc`
+`$ python -m pip install prestige_irc`
 
 ## Manually
 
 Clone this repository into your repo, and install `setup.py`:
 
-```python
-git clone https://github.com/avahe-kellenberger/prestige_irc.git
-cd prestige_irc
-python setup.py install
+```bash
+$ git clone https://github.com/avahe-kellenberger/prestige_irc.git
+$ cd prestige_irc
+$ python setup.py install
 ```
-You should now be able to import modules, e.g. `from prestige_irc.commands import Commands`
+You should now be able to import modules, e.g. 
+```python
+from prestige_irc.commands import Commands
+```
 
 # Documentation
 
