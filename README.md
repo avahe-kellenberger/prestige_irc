@@ -4,6 +4,8 @@ This module is a simple API for IRC networks.
 
 Note that this project is `python 3.6` or higher, since it uses fstrings.
 
+TODO: Planned update to revert to normal strings, so older versions of python can use this library.
+
 # Installation
 
 ## pip
